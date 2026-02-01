@@ -9,4 +9,7 @@
 	<link rel="icon" href={favicon} />
 	<title>Task Master</title>
 </svelte:head>
-{@render children()}
+
+<div class="min-h-screen w-screen overflow-x-clip bg-neutral-900 text-neutral-200">
+	{@render children()}
+</div>

@@ -1,5 +1,7 @@
 
 
 todos:
-  [ ] General key input listener
-  [ ] Task Input
+  [ ] General key input listener @started(26-02-01 16:16)
+  [ ] Task Input @started(26-02-01 16:49)
+  [ ] Add multiple projects support
+  [ ] mobile
