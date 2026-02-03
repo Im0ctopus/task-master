@@ -29,15 +29,18 @@
 </script>
 
 <script lang="ts">
+	import type { Task } from '../../routes/+page.svelte';
+
 	import UrgencyBtn from './common/buttons/urgencyBtn.svelte';
 	import { Plus } from '@lucide/svelte';
 
 	type Props = {
 		inputRef: HTMLTextAreaElement;
 		toggleIsTyping: (val: boolean) => void;
+		addTask: (task: Pick<Task, 'name' | 'urgency'>) => void;
 	};
 
-	let { inputRef = $bindable(), toggleIsTyping }: Props = $props();
+	let { inputRef = $bindable(), toggleIsTyping, addTask }: Props = $props();
 
 	let value: string = $state('');
 	let urgency: null | string = $state(null);
@@ -46,12 +49,26 @@
 	const onFocus = () => toggleIsTyping(true);
 	const onBlur = () => toggleIsTyping(false);
 
+	const onEnter = () => {
+		const name = value.trim();
+		if (name === '') return;
+
+		if (!action) {
+			addTask({
+				name,
+				urgency
+			});
+		}
+
+		value = '';
+	};
+
 	const onKeyDown = (e: KeyboardEvent) => {
 		const key = e.key;
 
 		if (key === 'Enter') {
-			// TODO: this needs to add the task
 			e.preventDefault();
+			onEnter();
 		} else if (key === 'Escape') onBlur();
 	};
 
@@ -65,10 +82,9 @@
 		const trimmedValue = value.trim();
 		if (trimmedValue === '') return;
 
-		// Urgency actions
+		// Urgencies
 		if (trimmedValue === '@none') {
 			urgency = null;
-			action = null;
 			value = '';
 		} else if (trimmedValue.startsWith('@')) {
 			const cleanedUpVal = trimmedValue.substring(1);
@@ -77,10 +93,10 @@
 			);
 			if (!possibleUrgency) return;
 
-			action = possibleUrgency.value;
 			urgency = possibleUrgency.value;
 			value = '';
 		}
+		// TODO: actions
 	});
 </script>
 
@@ -121,7 +137,11 @@
 			{/each}
 		</div>
 		<button
-			class="flex items-center justify-center gap-1 rounded bg-neutral-700 px-1.5 py-1.5 text-sm"
+			onclick={(e) => {
+				e.stopPropagation();
+				onEnter();
+			}}
+			class="flex items-center justify-center gap-1 rounded bg-neutral-700 px-1.5 py-1.5 text-sm transition-[scale,background-color] hover:bg-neutral-600/70 active:scale-98"
 		>
 			<Plus size="1.25rem" />
 		</button>
