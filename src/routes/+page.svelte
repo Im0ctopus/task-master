@@ -20,6 +20,7 @@
 	let selectedSubTask: null | number = $state(null);
 	let openedTasks: number[] = $state([]);
 
+	// svelte-ignore non_reactive_update
 	let inputRef: HTMLTextAreaElement;
 
 	$effect(() => {
