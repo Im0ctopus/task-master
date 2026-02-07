@@ -12,6 +12,7 @@
 		addTask: (task: Pick<Task, 'name' | 'urgency'>) => void;
 		editTask: (id: number, task: Pick<Task, 'name' | 'urgency'>) => void;
 		filteredTasks: Task[];
+		action: null | Action;
 	};
 
 	let {
@@ -19,15 +20,33 @@
 		toggleIsTyping,
 		addTask,
 		editTask,
-		filteredTasks
+		filteredTasks,
+		action = $bindable()
 	}: Props = $props();
 
 	let value: string = $state('');
 	let urgency: null | string = $state(null);
-	let action: null | Action = $state(null);
 
 	const onFocus = () => toggleIsTyping(true);
 	const onBlur = () => toggleIsTyping(false);
+
+	const onAction = (trimmedValue: string) => {
+		if (!action) return;
+
+		switch (action.type) {
+			case 'edit':
+				if (!action.subTask) {
+					editTask(action.task.id, {
+						name: trimmedValue,
+						urgency: urgency
+					});
+				}
+
+				break;
+			default:
+				return;
+		}
+	};
 
 	const onEnter = () => {
 		const trimmedValue = value.trim();
@@ -52,7 +71,9 @@
 			if (!newAction) return;
 
 			action = newAction;
-		} else {
+			urgency = newAction.subTask ? newAction.subTask.urgency : newAction.task.urgency;
+		} else if (action) onAction(trimmedValue);
+		else {
 			addTask({
 				name: trimmedValue,
 				urgency

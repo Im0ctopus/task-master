@@ -6,7 +6,7 @@ todos:
     [ ] Actions @started(26-02-03 22:43)
       [X] Action type @done(26-02-07 13:35)
       [ ] When on editing mode show the tasks ids
-      [ ] @low animate actions
+      [ ] @low animate action's visual feedback
   
   
   [ ] Add multiple projects support

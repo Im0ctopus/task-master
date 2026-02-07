@@ -15,12 +15,14 @@
 	import type { Status } from '$lib/types/status';
 	import { bindManager } from '$lib/utils/bindManager';
 	import { saveObjOnLocalStorage } from '$lib/utils/localStorageHelper';
+	import { type Action } from '$lib/utils/actionsHelper';
 
 	let tasks: Task[] = $state([]);
 	let isTyping = $state(false);
 	let selectedTask = $state(0);
 	let selectedSubTask: null | number = $state(null);
 	let openedTasks: number[] = $state([]);
+	let action: null | Action = $state(null);
 
 	let filteredTasks: Task[] = $derived(tasks);
 
@@ -47,16 +49,28 @@
 	const addTask = (task: Pick<Task, 'name' | 'urgency'>) => {
 		const id = !tasks.length ? 1 : tasks.sort((a, b) => b.id - a.id)[0].id + 1;
 		const newTasks: Task[] = [{ ...task, id, status: 'none', subTasks: [] }, ...tasks];
-
 		tasks = newTasks;
 		saveObjOnLocalStorage('tasks', newTasks);
 
 		toggleIsTyping(false);
 	};
 
-	const editTask = (id: number, task: Pick<Task, 'name' | 'urgency'>) => {
+	const editTask = (id: number, newTask: Pick<Task, 'name' | 'urgency'>) => {
 		// TODO: edit what comes from the task
-		// Attention to the status, it can be null but thats a "value"
+		// Attention to the urgency, it can be null but thats a "value"
+
+		const taskIndex = tasks.findIndex((t) => t.id === id);
+		if (taskIndex === -1) {
+			console.error(`Task with id ${id} not found`);
+			return;
+		}
+
+		const { name, urgency } = newTask;
+		tasks[taskIndex] = { ...tasks[taskIndex], name, urgency };
+		saveObjOnLocalStorage('tasks', tasks);
+
+		action = null;
+		toggleIsTyping(false);
 	};
 
 	const addSubTask = (taskId: number, subTask: Pick<Task, 'name' | 'urgency'>) => {
@@ -78,6 +92,6 @@
 	</p>
 
 	<div class="w-full max-w-4xl px-3 lg:px-0">
-		<TaskInput bind:inputRef {toggleIsTyping} {addTask} {editTask} {filteredTasks} />
+		<TaskInput bind:inputRef {toggleIsTyping} {addTask} {editTask} {filteredTasks} bind:action />
 	</div>
 </div>
