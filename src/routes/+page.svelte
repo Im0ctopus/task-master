@@ -4,8 +4,10 @@
 		name: string;
 		urgency: string | null;
 		status: Status;
-		subTasks: Omit<Task, 'subTasks'>[];
+		subTasks: SubTask[];
 	};
+
+	export type SubTask = Omit<Task, 'subTasks'>;
 </script>
 
 <script lang="ts">
@@ -19,6 +21,8 @@
 	let selectedTask = $state(0);
 	let selectedSubTask: null | number = $state(null);
 	let openedTasks: number[] = $state([]);
+
+	let filteredTasks: Task[] = $derived(tasks);
 
 	// svelte-ignore non_reactive_update
 	let inputRef: HTMLTextAreaElement;
@@ -42,14 +46,15 @@
 
 	const addTask = (task: Pick<Task, 'name' | 'urgency'>) => {
 		const id = !tasks.length ? 1 : tasks.sort((a, b) => b.id - a.id)[0].id + 1;
+		const newTasks: Task[] = [{ ...task, id, status: 'none', subTasks: [] }, ...tasks];
 
-		tasks.push({ ...task, id, status: 'none', subTasks: [] });
-		saveObjOnLocalStorage('tasks', tasks);
+		tasks = newTasks;
+		saveObjOnLocalStorage('tasks', newTasks);
 
 		toggleIsTyping(false);
 	};
 
-	const editTask = (id: number, task: Partial<Omit<Task, 'id' | 'subTasks'>>) => {
+	const editTask = (id: number, task: Pick<Task, 'name' | 'urgency'>) => {
 		// TODO: edit what comes from the task
 		// Attention to the status, it can be null but thats a "value"
 	};
@@ -73,6 +78,6 @@
 	</p>
 
 	<div class="w-full max-w-4xl px-3 lg:px-0">
-		<TaskInput bind:inputRef {toggleIsTyping} {addTask} />
+		<TaskInput bind:inputRef {toggleIsTyping} {addTask} {editTask} {filteredTasks} />
 	</div>
 </div>

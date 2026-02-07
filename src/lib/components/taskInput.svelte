@@ -1,61 +1,60 @@
-<script lang="ts" module>
-	const urgencies = [
-		{
-			value: 'critical',
-			label: 'Critical',
-			className: 'bg-red-500/20 text-red-500'
-		},
-		{
-			value: 'high',
-			label: 'High',
-			className: 'bg-yellow-500/20 text-yellow-500'
-		},
-		{
-			value: 'medium',
-			label: 'Medium',
-			className: 'bg-orange-500/20 text-orange-500'
-		},
-		{
-			value: 'low',
-			label: 'Low',
-			className: 'bg-green-500/20 text-green-500'
-		},
-		{
-			value: 'today',
-			label: 'Today',
-			className: 'bg-purple-500/20 text-purple-500'
-		}
-	];
-</script>
-
 <script lang="ts">
+	import { enterAction, type Action } from '$lib/utils/actionsHelper';
+	import { urgencies } from '$lib/utils/urgencies';
 	import type { Task } from '../../routes/+page.svelte';
 
 	import UrgencyBtn from './common/buttons/urgencyBtn.svelte';
-	import { Plus } from '@lucide/svelte';
+	import { Plus, X } from '@lucide/svelte';
 
 	type Props = {
 		inputRef: HTMLTextAreaElement;
 		toggleIsTyping: (val: boolean) => void;
 		addTask: (task: Pick<Task, 'name' | 'urgency'>) => void;
+		editTask: (id: number, task: Pick<Task, 'name' | 'urgency'>) => void;
+		filteredTasks: Task[];
 	};
 
-	let { inputRef = $bindable(), toggleIsTyping, addTask }: Props = $props();
+	let {
+		inputRef = $bindable(),
+		toggleIsTyping,
+		addTask,
+		editTask,
+		filteredTasks
+	}: Props = $props();
 
 	let value: string = $state('');
 	let urgency: null | string = $state(null);
-	let action: null | string = $state(null);
+	let action: null | Action = $state(null);
 
 	const onFocus = () => toggleIsTyping(true);
 	const onBlur = () => toggleIsTyping(false);
 
 	const onEnter = () => {
-		const name = value.trim();
-		if (name === '') return;
+		const trimmedValue = value.trim();
+		if (trimmedValue === '') return;
 
-		if (!action) {
+		if (trimmedValue === ':q') toggleIsTyping(false);
+		else if (trimmedValue === '@none' || trimmedValue === '@n') urgency = null;
+		else if (trimmedValue.startsWith('@') && !trimmedValue.includes(' ')) {
+			const cleanedUpVal = trimmedValue.substring(1);
+			const possibleUrgency = urgencies.find(
+				(u) => u.value.toLowerCase() === cleanedUpVal.toLowerCase()
+			);
+			if (!possibleUrgency) {
+				console.error('No matching urgency found');
+				return;
+			}
+
+			urgency = possibleUrgency.value;
+		} else if (trimmedValue === '/n' || trimmedValue === '/none') action = null;
+		else if (trimmedValue.startsWith('/') && !trimmedValue.includes(' ')) {
+			const newAction = enterAction(trimmedValue, filteredTasks);
+			if (!newAction) return;
+
+			action = newAction;
+		} else {
 			addTask({
-				name,
+				name: trimmedValue,
 				urgency
 			});
 		}
@@ -76,28 +75,6 @@
 		if (urgency === val) urgency = null;
 		else urgency = val;
 	};
-
-	// Verify actions on input
-	$effect(() => {
-		const trimmedValue = value.trim();
-		if (trimmedValue === '') return;
-
-		// Urgencies
-		if (trimmedValue === '@none') {
-			urgency = null;
-			value = '';
-		} else if (trimmedValue.startsWith('@')) {
-			const cleanedUpVal = trimmedValue.substring(1);
-			const possibleUrgency = urgencies.find(
-				(u) => u.value.toLowerCase() === cleanedUpVal.toLowerCase()
-			);
-			if (!possibleUrgency) return;
-
-			urgency = possibleUrgency.value;
-			value = '';
-		}
-		// TODO: actions
-	});
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -107,9 +84,20 @@
 	class="relative w-full cursor-text overflow-clip rounded-t bg-neutral-800 p-2 shadow-inner shadow-neutral-900"
 >
 	{#if action}
-		<p class="absolute top-1 left-1.5 text-sm font-semibold text-neutral-500">
-			{action}
-		</p>
+		<!-- TODO: Change this to div parented and add remove btn -->
+		<div class="absolute inset-x-0 top-1 p-1">
+			<div
+				title={`${action.type} - ${action.task.name}${action.subTask ? `/${action.subTask.name}` : ''}`}
+				class="flex w-fit max-w-full min-w-0 items-center justify-start gap-1 overflow-hidden rounded bg-neutral-700 px-1 py-0.5 text-xs font-semibold text-neutral-400 capitalize select-none"
+			>
+				<p class="min-w-0 truncate">
+					{`${action.type} - ${action.task.name}${action.subTask ? `/${action.subTask.name}` : ''}`}
+				</p>
+				<button onclick={() => (action = null)} class="shrink-0 hover:text-neutral-300">
+					<X size="1rem" />
+				</button>
+			</div>
+		</div>
 	{/if}
 	<textarea
 		bind:value
@@ -117,7 +105,9 @@
 		onfocus={onFocus}
 		onblur={onBlur}
 		onkeydown={onKeyDown}
-		class="w-full resize-none outline-0 {action ? 'mt-4 h-12' : 'h-16'}"
+		class="w-full resize-none outline-0 transition-all duration-150 ease-out {action
+			? 'mt-5.5 h-10.5'
+			: 'h-16'}"
 		placeholder="New task here..."
 	></textarea>
 	<div></div>
