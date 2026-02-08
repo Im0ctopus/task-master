@@ -21,12 +21,12 @@
 </script>
 
 <div
-	class="relative flex w-full max-w-4xl items-start justify-start gap-1 overflow-auto pt-7 pb-2 text-sm"
+	class="relative flex w-full max-w-4xl shrink-0 items-start justify-start gap-1 overflow-auto px-2 pt-7 pb-0.5 text-sm"
 >
 	{#each tabs as { label, value }, index (index)}
 		<button
 			id="tab_{value}"
-			class="rounded px-2 py-1 transition-colors duration-150 ease-out {selectedTab !== value &&
+			class="rounded p-1 transition-colors duration-150 ease-out {selectedTab !== value &&
 				'cursor-pointer text-neutral-500'}"
 			onclick={() => (selectedTab = value)}
 		>

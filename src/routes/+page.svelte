@@ -14,9 +14,11 @@
 	import TaskInput from '$lib/components/taskInput.svelte';
 	import type { Status } from '$lib/types/status';
 	import { bindManager, type BindActions } from '$lib/utils/bindManager';
-	import { saveObjOnLocalStorage } from '$lib/utils/localStorageHelper';
+	import { getObjFromLocalStorage, saveObjOnLocalStorage } from '$lib/utils/localStorageHelper';
 	import { type Action } from '$lib/utils/actionsHelper';
 	import TabSelector, { type Tab } from '$lib/components/tabSelector/tabSelector.svelte';
+	import TaskList from '$lib/components/tasks/taskList.svelte';
+	import { onMount } from 'svelte';
 
 	let tasks: Task[] = $state([]);
 	let isTyping = $state(false);
@@ -24,13 +26,22 @@
 	let selectedSubTask: null | number = $state(null);
 	let openedTasks: number[] = $state([]);
 	let action: null | Action = $state(null);
-	// TODO: this should be saved on the localStorage
 	let selectedTab: Tab = $state('workingOn');
+
+	let currentId: number = 0;
 
 	let filteredTasks: Task[] = $derived(tasks);
 
 	// svelte-ignore non_reactive_update
 	let inputRef: HTMLTextAreaElement;
+
+	onMount(() => {
+		const storedTasks = getObjFromLocalStorage('tasks');
+		if (!storedTasks) return;
+		tasks = storedTasks;
+		if (storedTasks && storedTasks.length)
+			currentId = currentId = Math.max(...tasks.map((t) => t.id));
+	});
 
 	$effect(() => {
 		if (!isTyping) document.addEventListener('keydown', bindHandler);
@@ -57,8 +68,8 @@
 	let onTabChange = (tab: Tab) => (selectedTab = tab);
 
 	const addTask = (task: Pick<Task, 'name' | 'urgency'>) => {
-		const id = !tasks.length ? 1 : tasks.sort((a, b) => b.id - a.id)[0].id + 1;
-		const newTasks: Task[] = [{ ...task, id, status: 'none', subTasks: [] }, ...tasks];
+		const id = ++currentId;
+		const newTasks: Task[] = [...tasks, { ...task, id, status: 'none', subTasks: [] }];
 		tasks = newTasks;
 		saveObjOnLocalStorage('tasks', newTasks);
 
@@ -93,11 +104,11 @@
 	};
 </script>
 
-<div class="flex h-screen w-full flex-col items-center justify-between font-main">
+<div class="flex h-screen w-full flex-col items-center justify-start overflow-clip font-main">
 	<TabSelector bind:selectedTab />
-	<p class="min-h-0 shrink-0 grow">
-		{isTyping}
-	</p>
+	<div class="relative min-h-0 w-full grow">
+		<TaskList {filteredTasks} />
+	</div>
 	<div class="w-full max-w-4xl shrink-0 px-3 lg:px-0">
 		<TaskInput bind:inputRef {toggleIsTyping} {addTask} {editTask} {filteredTasks} bind:action />
 	</div>

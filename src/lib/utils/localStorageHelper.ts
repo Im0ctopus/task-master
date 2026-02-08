@@ -1,8 +1,10 @@
-export const saveObjOnLocalStorage = <T>(key: string, object: T) => {
+type Storable = 'tasks';
+
+export const saveObjOnLocalStorage = <T>(key: Storable, object: T) => {
 	localStorage.setItem(key, JSON.stringify(object));
 };
 
-export const getObjFromLocalStorage = (key: string) => {
+export const getObjFromLocalStorage = (key: Storable) => {
 	const item = localStorage.getItem(key);
 	if (!item) return null;
 	try {

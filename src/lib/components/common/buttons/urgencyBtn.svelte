@@ -9,7 +9,9 @@
 
 	let { label, onClick, value, selected, className }: Props = $props();
 
-	const handleClick = () => onClick(value);
+	const handleClick = () => {
+		!selected && onClick(value);
+	};
 </script>
 
 <button

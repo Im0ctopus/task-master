@@ -90,6 +90,7 @@
 			e.preventDefault();
 			onEnter();
 		} else if (key === 'Escape') onBlur();
+		else if (action && value === '' && key === 'Backspace') action = null;
 	};
 
 	const onUrgencyClick = (val: string) => {
