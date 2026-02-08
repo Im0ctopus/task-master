@@ -1,15 +1,25 @@
-export const bindManager = (e: KeyboardEvent, toggleIsTyping: (val: boolean) => void) => {
-	const key = e.key;
-	// FIXME: remove this pls
+import { type Tab, tabs } from '$lib/components/tabSelector/tabSelector.svelte';
+
+export type BindActions = {
+	toggleIsTyping: (val: boolean) => void;
+	onTabChange: (tab: Tab) => void;
+};
+
+export const bindManager = (e: KeyboardEvent, actions: BindActions) => {
+	const { key, ctrlKey } = e;
+	const { toggleIsTyping, onTabChange } = actions;
+
 	console.log(key);
 
-	switch (key) {
-		case 'Enter':
-			if (e.ctrlKey) {
+	if (ctrlKey) {
+		switch (key) {
+			case 'Enter':
 				toggleIsTyping(true);
-			} else {
-				// TODO: open task
-			}
-			break;
+				break;
+		}
+	} else {
+		const tabIndex = Number(key);
+		const tab = tabs[tabIndex - 1];
+		if (tab) return onTabChange(tab.value);
 	}
 };
