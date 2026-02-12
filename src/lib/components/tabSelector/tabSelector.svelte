@@ -1,11 +1,9 @@
 <script lang="ts" module>
-	export type Tab = 'workingOn' | 'started' | 'done' | 'canceled';
-
 	export const tabs: {
 		label: string;
-		value: Tab;
+		value: Status;
 	}[] = [
-		{ label: 'Working On', value: 'workingOn' },
+		{ label: 'Working On', value: 'none' },
 		{ label: 'Started', value: 'started' },
 		{ label: 'Done', value: 'done' },
 		{ label: 'Canceled', value: 'canceled' }
@@ -13,8 +11,10 @@
 </script>
 
 <script lang="ts">
+	import type { Status } from '$lib/types/status';
+
 	type Props = {
-		selectedTab: Tab;
+		selectedTab: Status;
 	};
 
 	let { selectedTab = $bindable() }: Props = $props();

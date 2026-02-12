@@ -16,7 +16,7 @@
 	import { bindManager, type BindActions } from '$lib/utils/bindManager';
 	import { getObjFromLocalStorage, saveObjOnLocalStorage } from '$lib/utils/localStorageHelper';
 	import { type Action } from '$lib/utils/actionsHelper';
-	import TabSelector, { type Tab } from '$lib/components/tabSelector/tabSelector.svelte';
+	import TabSelector from '$lib/components/tabSelector/tabSelector.svelte';
 	import TaskList from '$lib/components/tasks/taskList.svelte';
 	import { onMount } from 'svelte';
 
@@ -26,11 +26,11 @@
 	let selectedSubTask: null | number = $state(null);
 	let openedTasks: number[] = $state([]);
 	let action: null | Action = $state(null);
-	let selectedTab: Tab = $state('workingOn');
+	let selectedTab: Status = $state('none');
 
 	let currentId: number = 0;
 
-	let filteredTasks: Task[] = $derived(tasks);
+	let filteredTasks: Task[] = $derived(tasks.filter((t) => t.status === selectedTab));
 
 	// svelte-ignore non_reactive_update
 	let inputRef: HTMLTextAreaElement;
@@ -65,7 +65,7 @@
 		val ? inputRef.focus() : inputRef.blur();
 	};
 
-	let onTabChange = (tab: Tab) => (selectedTab = tab);
+	let onTabChange = (tab: Status) => (selectedTab = tab);
 
 	const addTask = (task: Pick<Task, 'name' | 'urgency'>) => {
 		const id = ++currentId;

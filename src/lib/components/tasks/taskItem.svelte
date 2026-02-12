@@ -21,7 +21,7 @@
 		<p class="text-xs text-neutral-600">
 			{taskVariation.icon}
 		</p>
-		<p class="truncate font-semibold">
+		<p class="truncate">
 			{name}
 		</p>
 		{#if urgency}
