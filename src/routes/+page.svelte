@@ -39,8 +39,7 @@
 		const storedTasks = getObjFromLocalStorage('tasks');
 		if (!storedTasks) return;
 		tasks = storedTasks;
-		if (storedTasks && storedTasks.length)
-			currentId = currentId = Math.max(...tasks.map((t) => t.id));
+		if (storedTasks && storedTasks.length) currentId = Math.max(...tasks.map((t) => t.id));
 	});
 
 	$effect(() => {
@@ -92,7 +91,20 @@
 	};
 
 	const addSubTask = (taskId: number, subTask: Pick<Task, 'name' | 'urgency'>) => {
-		// TODO:
+		const index = tasks.findIndex((t) => t.id === taskId);
+		if (index === -1) return;
+
+		const id = tasks[index].subTasks.length
+			? Math.max(...tasks[index].subTasks.map((t) => t.id)) + 1
+			: 1;
+		tasks[index].subTasks.push({
+			...subTask,
+			id,
+			status: 'none'
+		});
+
+		saveObjOnLocalStorage('tasks', tasks);
+		!openedTasks.includes(taskId) && openedTasks.push(taskId);
 	};
 
 	const editSubTask = (
@@ -101,15 +113,25 @@
 		subTask: Pick<Task, 'name' | 'urgency'>
 	) => {
 		// TODO:
+
+		!openedTasks.includes(taskId) && openedTasks.push(taskId);
 	};
 </script>
 
 <div class="flex h-screen w-full flex-col items-center justify-start overflow-clip font-main">
 	<TabSelector bind:selectedTab />
 	<div class="relative min-h-0 w-full grow">
-		<TaskList {filteredTasks} />
+		<TaskList {filteredTasks} bind:openedTasks />
 	</div>
 	<div class="w-full max-w-4xl shrink-0 px-3 lg:px-0">
-		<TaskInput bind:inputRef {toggleIsTyping} {addTask} {editTask} {filteredTasks} bind:action />
+		<TaskInput
+			bind:inputRef
+			{toggleIsTyping}
+			{addTask}
+			{editTask}
+			{addSubTask}
+			{filteredTasks}
+			bind:action
+		/>
 	</div>
 </div>

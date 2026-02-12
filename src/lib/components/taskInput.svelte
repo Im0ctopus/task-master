@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { enterAction, type Action } from '$lib/utils/actionsHelper';
+	import { enterAction, onAction, type Action, type actionActions } from '$lib/utils/actionsHelper';
 	import { urgencies } from '$lib/utils/urgencies';
 	import type { Task } from '../../routes/+page.svelte';
 
@@ -11,6 +11,7 @@
 		toggleIsTyping: (val: boolean) => void;
 		addTask: (task: Pick<Task, 'name' | 'urgency'>) => void;
 		editTask: (id: number, task: Pick<Task, 'name' | 'urgency'>) => void;
+		addSubTask: (taskId: number, subTask: Pick<Task, 'name' | 'urgency'>) => void;
 		filteredTasks: Task[];
 		action: null | Action;
 	};
@@ -21,7 +22,8 @@
 		addTask,
 		editTask,
 		filteredTasks,
-		action = $bindable()
+		action = $bindable(),
+		addSubTask
 	}: Props = $props();
 
 	let value: string = $state('');
@@ -29,24 +31,6 @@
 
 	const onFocus = () => toggleIsTyping(true);
 	const onBlur = () => toggleIsTyping(false);
-
-	const onAction = (trimmedValue: string) => {
-		if (!action) return;
-
-		switch (action.type) {
-			case 'edit':
-				if (!action.subTask) {
-					editTask(action.task.id, {
-						name: trimmedValue,
-						urgency: urgency
-					});
-				}
-
-				break;
-			default:
-				return;
-		}
-	};
 
 	const onEnter = () => {
 		const trimmedValue = value.trim();
@@ -72,8 +56,13 @@
 
 			action = newAction;
 			urgency = newAction.subTask ? newAction.subTask.urgency : newAction.task.urgency;
-		} else if (action) onAction(trimmedValue);
-		else {
+		} else if (action) {
+			const actions: actionActions = {
+				editTask,
+				addSubTask
+			};
+			onAction(trimmedValue, action, urgency, actions);
+		} else {
 			addTask({
 				name: trimmedValue,
 				urgency
@@ -130,7 +119,7 @@
 		class="w-full resize-none outline-0 transition-all duration-150 ease-out {action
 			? 'mt-5.5 h-10.5'
 			: 'h-16'}"
-		placeholder="New task here..."
+		placeholder="What's the plan?"
 	></textarea>
 	<div></div>
 	<div class="flex items-end justify-between gap-2">

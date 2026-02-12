@@ -8,7 +8,8 @@ todos:
       [ ] When on editing mode show the tasks ids
       [ ] @low animate action's visual feedback
   [ ] Loading view getting from the localStorage
-  
+  [ ] When changing the status of a task/subtask, there should be a delay and animation
+  [ ] Toasts in console.errors
   
   [ ] Add multiple projects support
   [ ] mobile
