@@ -7,19 +7,20 @@
 
 	type Props = {
 		task: Task;
+		index: number;
 		isOpen: boolean;
 		toggleOpen: (id: number) => void;
 	};
 
-	let { task, isOpen, toggleOpen }: Props = $props();
+	let { task, isOpen, toggleOpen, index }: Props = $props();
 
 	let { id, name, status, subTasks, urgency } = $derived(task);
 	let taskVariation = $derived(taskVariations[status]);
 	let urgencyVariation = $derived(urgencies.find((u) => u.value === urgency));
 </script>
 
-<div class="w-full min-w-0 cursor-default rounded px-3 py-2.5 {taskVariation.className}">
-	<div class="flex items-center justify-between gap-2">
+<div class="w-full min-w-0 cursor-default rounded px-3 {taskVariation.className}">
+	<div class="flex items-center justify-between gap-2 py-2.5">
 		<div class="flex min-w-0 items-center justify-center gap-2">
 			<p class="text-xs text-neutral-600">
 				{taskVariation.icon}
@@ -42,5 +43,5 @@
 			</button>
 		</div>
 	</div>
-	<SubTasksList {subTasks} {isOpen} />
+	<SubTasksList {subTasks} {isOpen} taskIndex={index} />
 </div>

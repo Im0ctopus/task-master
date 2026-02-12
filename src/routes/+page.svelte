@@ -18,22 +18,34 @@
 	import { type Action } from '$lib/utils/actionsHelper';
 	import TabSelector from '$lib/components/tabSelector/tabSelector.svelte';
 	import TaskList from '$lib/components/tasks/taskList.svelte';
-	import { onMount } from 'svelte';
+	import { onMount, setContext } from 'svelte';
+	import type { SelectedTask, TaskContext } from '$lib/types/taskContext';
 
 	let tasks: Task[] = $state([]);
 	let isTyping = $state(false);
-	let selectedTask = $state(0);
-	let selectedSubTask: null | number = $state(null);
+	let selectedTask: SelectedTask = $state({
+		taskIndex: 0
+	});
 	let openedTasks: number[] = $state([]);
 	let action: null | Action = $state(null);
 	let selectedTab: Status = $state('none');
 
 	let currentId: number = 0;
 
+	// Also filter if it has a subtask with that status
 	let filteredTasks: Task[] = $derived(tasks.filter((t) => t.status === selectedTab));
 
 	// svelte-ignore non_reactive_update
 	let inputRef: HTMLTextAreaElement;
+
+	setContext('getSelectedTab', () => selectedTab);
+
+	const setSelectedTask = (task: SelectedTask) => (selectedTask = task);
+	let taskContext: TaskContext = {
+		getSelectedTask: () => selectedTask,
+		setSelectedTask
+	};
+	setContext('taskContext', taskContext);
 
 	onMount(() => {
 		const storedTasks = getObjFromLocalStorage('tasks');
