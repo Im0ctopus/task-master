@@ -35,13 +35,17 @@
 			{/if}
 		</div>
 		<div class="flex items-center justify-center gap-1">
-			<button onclick={() => toggleOpen(id)}>
+			<button onclick={() => toggleOpen(id)} disabled={!subTasks.length} class="p-0.5">
 				<ChevronDown
 					size="1.2rem"
-					class="{!isOpen && 'rotate-180'} transition-[rotate] duration-150 ease-out"
+					class="{!isOpen &&
+						'rotate-180'} transition-[rotate] duration-150 ease-out {!subTasks.length &&
+						'text-neutral-700'}"
 				/>
 			</button>
 		</div>
 	</div>
-	<SubTasksList {subTasks} {isOpen} taskIndex={index} />
+	{#if subTasks.length}
+		<SubTasksList {subTasks} {isOpen} taskIndex={index} />
+	{/if}
 </div>

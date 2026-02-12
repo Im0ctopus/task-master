@@ -55,7 +55,8 @@
 			if (!newAction) return;
 
 			action = newAction;
-			urgency = newAction.subTask ? newAction.subTask.urgency : newAction.task.urgency;
+			if (newAction.type === 'edit')
+				urgency = newAction.subTask ? newAction.subTask.urgency : newAction.task.urgency;
 		} else if (action) {
 			const actions: actionActions = {
 				editTask,
