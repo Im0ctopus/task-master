@@ -1,5 +1,11 @@
 <script lang="ts">
-	import { enterAction, onAction, type Action, type actionActions } from '$lib/utils/actionsHelper';
+	import {
+		enterAction,
+		onAction,
+		onUrgencyEdit,
+		type Action,
+		type ActionActions
+	} from '$lib/utils/actionsHelper';
 	import { urgencies } from '$lib/utils/urgencies';
 	import type { Task } from '../../routes/+page.svelte';
 
@@ -37,8 +43,10 @@
 		if (trimmedValue === '') return;
 
 		if (trimmedValue === ':q') toggleIsTyping(false);
-		else if (trimmedValue === '@none' || trimmedValue === '@n') urgency = null;
-		else if (trimmedValue.startsWith('@') && !trimmedValue.includes(' ')) {
+		else if (trimmedValue === '@none' || trimmedValue === '@n') {
+			urgency = null;
+			if (action && action.type === 'edit') onUrgencyEdit(action, urgency, { editTask });
+		} else if (trimmedValue.startsWith('@') && !trimmedValue.includes(' ')) {
 			const cleanedUpVal = trimmedValue.substring(1);
 			const possibleUrgency = urgencies.find(
 				(u) => u.value.toLowerCase() === cleanedUpVal.toLowerCase()
@@ -49,16 +57,21 @@
 			}
 
 			urgency = possibleUrgency.value;
+			if (action && action.type === 'edit') onUrgencyEdit(action, urgency, { editTask });
 		} else if (trimmedValue === '/n' || trimmedValue === '/none') action = null;
 		else if (trimmedValue.startsWith('/') && !trimmedValue.includes(' ')) {
 			const newAction = enterAction(trimmedValue, filteredTasks);
 			if (!newAction) return;
 
 			action = newAction;
-			if (newAction.type === 'edit')
+			console.log(newAction.subTask ? newAction.subTask.name : newAction.task.name);
+			if (newAction.type === 'edit') {
+				value = newAction.subTask ? newAction.subTask.name : newAction.task.name;
 				urgency = newAction.subTask ? newAction.subTask.urgency : newAction.task.urgency;
+				return;
+			}
 		} else if (action) {
-			const actions: actionActions = {
+			const actions: ActionActions = {
 				editTask,
 				addSubTask
 			};
@@ -80,7 +93,10 @@
 			e.preventDefault();
 			onEnter();
 		} else if (key === 'Escape') onBlur();
-		else if (action && value === '' && key === 'Backspace') action = null;
+		else if (value === '' && key === 'Backspace') {
+			if (action) action = null;
+			else onBlur();
+		}
 	};
 
 	const onUrgencyClick = (val: string) => {

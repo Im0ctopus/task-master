@@ -89,7 +89,7 @@ const getSubTask = (
 	return { task, subTask };
 };
 
-export type actionActions = {
+export type ActionActions = {
 	editTask: (id: number, task: Pick<Task, 'name' | 'urgency'>) => void;
 	addSubTask: (taskId: number, subTask: Pick<Task, 'name' | 'urgency'>) => void;
 };
@@ -98,7 +98,7 @@ export const onAction = (
 	trimmedValue: string,
 	action: Action | null,
 	urgency: string | null,
-	actions: actionActions
+	actions: ActionActions
 ) => {
 	if (!action) return;
 
@@ -122,4 +122,22 @@ export const onAction = (
 		default:
 			return;
 	}
+};
+
+type UrgencyEditActions = Pick<ActionActions, 'editTask'>;
+
+export const onUrgencyEdit = (
+	action: Action,
+	urgency: string | null,
+	actions: UrgencyEditActions
+) => {
+	const { task, subTask } = action;
+	const { editTask } = actions;
+
+	const newTask: Pick<Task, 'name' | 'urgency'> = {
+		name: subTask ? subTask.name : task.name,
+		urgency
+	};
+
+	if (!subTask) editTask(task.id, newTask);
 };

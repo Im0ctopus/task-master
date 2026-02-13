@@ -83,8 +83,6 @@
 		const newTasks: Task[] = [...tasks, { ...task, id, status: 'none', subTasks: [] }];
 		tasks = newTasks;
 		saveObjOnLocalStorage('tasks', newTasks);
-
-		toggleIsTyping(false);
 	};
 
 	const editTask = (id: number, newTask: Pick<Task, 'name' | 'urgency'>) => {
@@ -99,7 +97,6 @@
 		saveObjOnLocalStorage('tasks', tasks);
 
 		action = null;
-		toggleIsTyping(false);
 	};
 
 	const addSubTask = (taskId: number, subTask: Pick<Task, 'name' | 'urgency'>) => {
