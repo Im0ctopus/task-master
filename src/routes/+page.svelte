@@ -19,21 +19,22 @@
 	import TabSelector from '$lib/components/tabSelector/tabSelector.svelte';
 	import TaskList from '$lib/components/tasks/taskList.svelte';
 	import { onMount, setContext } from 'svelte';
-	import type { SelectedTask, TaskContext } from '$lib/types/taskContext';
+	import { defaultSelectedTask, type SelectedTask, type TaskContext } from '$lib/types/taskContext';
 
 	let tasks: Task[] = $state([]);
 	let isTyping = $state(false);
-	let selectedTask: SelectedTask = $state({
-		taskIndex: 0
-	});
+	let selectedTask: SelectedTask = $state(defaultSelectedTask);
 	let openedTasks: number[] = $state([]);
 	let action: null | Action = $state(null);
 	let selectedTab: Status = $state('none');
 
 	let currentId: number = 0;
 
-	// Also filter if it has a subtask with that status
-	let filteredTasks: Task[] = $derived(tasks.filter((t) => t.status === selectedTab));
+	let filteredTasks: Task[] = $derived(
+		tasks.filter(
+			(t) => t.status === selectedTab || t.subTasks.some((s) => s.status === selectedTab)
+		)
+	);
 
 	// svelte-ignore non_reactive_update
 	let inputRef: HTMLTextAreaElement;
@@ -65,10 +66,18 @@
 	let bindHandler = (e: KeyboardEvent) => {
 		const actions: BindActions = {
 			toggleIsTyping,
-			onTabChange
+			onTabChange,
+			onStatusChange,
+			onTaskChange,
+			toggleTaskOpen: (index: number) => {
+				const task = filteredTasks[index];
+				if (!task) return;
+
+				toggleTaskOpen(task.id);
+			}
 		};
 
-		bindManager(e, actions);
+		bindManager(e, selectedTask, actions);
 	};
 
 	let toggleIsTyping = (val: boolean) => {
@@ -76,7 +85,10 @@
 		val ? inputRef.focus() : inputRef.blur();
 	};
 
-	let onTabChange = (tab: Status) => (selectedTab = tab);
+	let onTabChange = (tab: Status) => {
+		selectedTab = tab;
+		selectedTask = defaultSelectedTask;
+	};
 
 	const addTask = (task: Pick<Task, 'name' | 'urgency'>) => {
 		const id = ++currentId;
@@ -139,6 +151,79 @@
 		!openedTasks.includes(taskId) && openedTasks.push(taskId);
 	};
 
+	const onStatusChange = (status: Status, taskId: number, subTaskId?: number) => {
+		const taskIndex = tasks.findIndex((t) => t.id === taskId);
+		if (taskIndex === -1) {
+			console.error(`Task with id ${taskId} not found`);
+			return;
+		}
+
+		if (!subTaskId) tasks[taskIndex] = { ...tasks[taskIndex], status };
+		else {
+			const subTaskIndex = tasks[taskIndex].subTasks.findIndex((t) => t.id === subTaskId);
+			if (subTaskIndex === -1) {
+				console.error(`Subtask with id ${subTaskId} not found in task ${taskId}`);
+				return;
+			}
+
+			tasks[taskIndex].subTasks[subTaskIndex] = {
+				...tasks[taskIndex].subTasks[subTaskIndex],
+				status
+			};
+		}
+	};
+
+	const onTaskChange = (goto: -1 | 1, skip?: boolean) => {
+		const { taskIndex, subTaskIndex } = selectedTask;
+		const currentTask = filteredTasks[taskIndex];
+		if (!currentTask) return;
+
+		if (
+			skip ||
+			!openedTasks.includes(currentTask.id) ||
+			(goto === -1 && subTaskIndex === undefined)
+		) {
+			const newIndex = taskIndex + goto;
+			const newTask = filteredTasks[newIndex];
+			if (!newTask) return;
+
+			if (skip || goto === 1 || !openedTasks.includes(newTask.id)) {
+				selectedTask = { taskIndex: newIndex };
+			} else {
+				selectedTask = { taskIndex: newIndex, subTaskIndex: newTask.subTasks.length - 1 };
+			}
+		} else {
+			const newSubTaskIndex = subTaskIndex !== undefined ? subTaskIndex + goto : 0;
+			const task = filteredTasks[taskIndex];
+			if (!task) return;
+
+			const newSubTask = task.subTasks[newSubTaskIndex];
+
+			if (newSubTaskIndex < 0) selectedTask = { taskIndex };
+			else if (!newSubTask) {
+				const newTask = filteredTasks[taskIndex + 1];
+				if (newTask) selectedTask = { taskIndex: taskIndex + 1 };
+			} else
+				selectedTask = {
+					taskIndex,
+					subTaskIndex: newSubTaskIndex
+				};
+		}
+	};
+
+	const toggleTaskOpen = (id: number) => {
+		const task = tasks.find((t) => t.id === id);
+		if (!task || !task.subTasks.length) return;
+
+		if (!openedTasks.includes(id)) openedTasks.push(id);
+		else {
+			const index = openedTasks.findIndex((t) => t === id);
+			if (index === -1) return;
+
+			openedTasks.splice(index, 1);
+		}
+	};
+
 	let inputActions: InputActions = $derived({
 		addSubTask,
 		addTask,
@@ -151,7 +236,7 @@
 <div class="flex h-screen w-full flex-col items-center justify-start overflow-clip font-main">
 	<TabSelector bind:selectedTab />
 	<div class="relative min-h-0 w-full grow">
-		<TaskList {filteredTasks} bind:openedTasks />
+		<TaskList {filteredTasks} {openedTasks} {toggleTaskOpen} />
 	</div>
 	<div class="w-full max-w-4xl shrink-0 px-3 lg:px-0">
 		<TaskInput bind:inputRef {filteredTasks} bind:action actions={inputActions} />

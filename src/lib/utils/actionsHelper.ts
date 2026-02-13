@@ -38,10 +38,10 @@ export const enterAction = (trimmedValue: string, filteredTasks: Task[]): Action
 				subTask: tasksInfo.subTask
 			};
 		}
-	} else if (action === 's') {
+	} else if (action === 't') {
 		const id = Number(subject);
 		if (isNaN(id)) {
-			console.error('Invalid taskId, to create a subtask use /st{taskId}');
+			console.error('Invalid taskId, to create a subtask use /t{taskId}');
 			return;
 		}
 
@@ -111,13 +111,15 @@ export const onAction = (
 	};
 
 	switch (type) {
-		case 'edit':
+		case 'edit': {
 			if (!subTask) editTask(task.id, newTask);
 			else editSubTask(task.id, subTask.id, newTask);
 			break;
-		case 'createSub':
+		}
+		case 'createSub': {
 			addSubTask(task.id, newTask);
 			break;
+		}
 		default:
 			return;
 	}

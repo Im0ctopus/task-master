@@ -7,3 +7,7 @@ export type SelectedTask = {
 	taskIndex: number;
 	subTaskIndex?: number;
 };
+
+export const defaultSelectedTask: SelectedTask = {
+	taskIndex: 0
+};

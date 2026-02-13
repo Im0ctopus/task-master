@@ -4,22 +4,32 @@
 	import { ChevronDown } from '@lucide/svelte';
 	import type { Task } from '../../../routes/+page.svelte';
 	import SubTasksList from './subTasks/subTasksList.svelte';
+	import { getContext } from 'svelte';
+	import type { TaskContext } from '$lib/types/taskContext';
 
 	type Props = {
 		task: Task;
 		index: number;
 		isOpen: boolean;
-		toggleOpen: (id: number) => void;
+		toggleTaskOpen: (id: number) => void;
 	};
 
-	let { task, isOpen, toggleOpen, index }: Props = $props();
+	let { task, isOpen, toggleTaskOpen, index }: Props = $props();
+	let { getSelectedTask }: TaskContext = getContext('taskContext');
 
+	let selectedTask = $derived(getSelectedTask());
 	let { id, name, status, subTasks, urgency } = $derived(task);
 	let taskVariation = $derived(taskVariations[status]);
 	let urgencyVariation = $derived(urgencies.find((u) => u.value === urgency));
 </script>
 
-<div class="w-full min-w-0 cursor-default rounded px-3 {taskVariation.className}">
+<div
+	class="w-full min-w-0 cursor-default rounded px-3 {taskVariation.className} {selectedTask.taskIndex ===
+		index &&
+		(selectedTask.subTaskIndex === undefined
+			? 'outline outline-neutral-500'
+			: 'outline outline-neutral-700')}"
+>
 	<div class="flex items-center justify-between gap-2 py-2.5">
 		<div class="flex min-w-0 items-center justify-center gap-2">
 			<p class="text-xs text-neutral-600">
@@ -35,7 +45,12 @@
 			{/if}
 		</div>
 		<div class="flex items-center justify-center gap-1">
-			<button onclick={() => toggleOpen(id)} disabled={!subTasks.length} class="p-0.5">
+			<button
+				onfocus={(e) => e.currentTarget.blur()}
+				onclick={() => toggleTaskOpen(id)}
+				disabled={!subTasks.length}
+				class="p-0.5"
+			>
 				<ChevronDown
 					size="1.2rem"
 					class="{!isOpen &&

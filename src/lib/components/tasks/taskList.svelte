@@ -5,25 +5,16 @@
 	type Props = {
 		filteredTasks: Task[];
 		openedTasks: number[];
+		toggleTaskOpen: (id: number) => void;
 	};
 
-	let { filteredTasks, openedTasks = $bindable() }: Props = $props();
-
-	const toggleOpen = (id: number) => {
-		if (!openedTasks.includes(id)) openedTasks.push(id);
-		else {
-			const index = openedTasks.findIndex((t) => t === id);
-			if (index === -1) return;
-
-			openedTasks.splice(index, 1);
-		}
-	};
+	let { filteredTasks, openedTasks, toggleTaskOpen }: Props = $props();
 </script>
 
 <div class="relative max-h-full w-full overflow-y-auto">
 	<div class="mx-auto flex w-full max-w-4xl flex-col items-center justify-center gap-3 px-3 py-5">
 		{#each filteredTasks as task, index (task.id)}
-			<TaskItem {task} {toggleOpen} isOpen={openedTasks.includes(task.id)} {index} />
+			<TaskItem {task} isOpen={openedTasks.includes(task.id)} {index} {toggleTaskOpen} />
 		{/each}
 	</div>
 </div>
