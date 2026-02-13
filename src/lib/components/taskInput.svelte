@@ -12,28 +12,31 @@
 	import UrgencyBtn from './common/buttons/urgencyBtn.svelte';
 	import { Plus, X } from '@lucide/svelte';
 
-	type Props = {
-		inputRef: HTMLTextAreaElement;
+	export type InputActions = {
 		toggleIsTyping: (val: boolean) => void;
 		addTask: (task: Pick<Task, 'name' | 'urgency'>) => void;
 		editTask: (id: number, task: Pick<Task, 'name' | 'urgency'>) => void;
 		addSubTask: (taskId: number, subTask: Pick<Task, 'name' | 'urgency'>) => void;
-		filteredTasks: Task[];
-		action: null | Action;
+		editSubTask: (
+			taskId: number,
+			subTaskId: number,
+			subTask: Pick<Task, 'name' | 'urgency'>
+		) => void;
 	};
 
-	let {
-		inputRef = $bindable(),
-		toggleIsTyping,
-		addTask,
-		editTask,
-		filteredTasks,
-		action = $bindable(),
-		addSubTask
-	}: Props = $props();
+	type Props = {
+		inputRef: HTMLTextAreaElement;
+		filteredTasks: Task[];
+		action: null | Action;
+		actions: InputActions;
+	};
+
+	let { inputRef = $bindable(), filteredTasks, action = $bindable(), actions }: Props = $props();
 
 	let value: string = $state('');
 	let urgency: null | string = $state(null);
+
+	let { addSubTask, addTask, editTask, toggleIsTyping, editSubTask } = $derived(actions);
 
 	const onFocus = () => toggleIsTyping(true);
 	const onBlur = () => toggleIsTyping(false);
@@ -45,7 +48,8 @@
 		if (trimmedValue === ':q') toggleIsTyping(false);
 		else if (trimmedValue === '@none' || trimmedValue === '@n') {
 			urgency = null;
-			if (action && action.type === 'edit') onUrgencyEdit(action, urgency, { editTask });
+			if (action && action.type === 'edit')
+				onUrgencyEdit(action, urgency, { editTask, editSubTask });
 		} else if (trimmedValue.startsWith('@') && !trimmedValue.includes(' ')) {
 			const cleanedUpVal = trimmedValue.substring(1);
 			const possibleUrgency = urgencies.find(
@@ -57,14 +61,14 @@
 			}
 
 			urgency = possibleUrgency.value;
-			if (action && action.type === 'edit') onUrgencyEdit(action, urgency, { editTask });
+			if (action && action.type === 'edit')
+				onUrgencyEdit(action, urgency, { editTask, editSubTask });
 		} else if (trimmedValue === '/n' || trimmedValue === '/none') action = null;
 		else if (trimmedValue.startsWith('/') && !trimmedValue.includes(' ')) {
 			const newAction = enterAction(trimmedValue, filteredTasks);
 			if (!newAction) return;
 
 			action = newAction;
-			console.log(newAction.subTask ? newAction.subTask.name : newAction.task.name);
 			if (newAction.type === 'edit') {
 				value = newAction.subTask ? newAction.subTask.name : newAction.task.name;
 				urgency = newAction.subTask ? newAction.subTask.urgency : newAction.task.urgency;
@@ -73,7 +77,8 @@
 		} else if (action) {
 			const actions: ActionActions = {
 				editTask,
-				addSubTask
+				addSubTask,
+				editSubTask
 			};
 			onAction(trimmedValue, action, urgency, actions);
 		} else {

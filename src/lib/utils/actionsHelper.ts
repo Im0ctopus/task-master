@@ -62,7 +62,6 @@ export const enterAction = (trimmedValue: string, filteredTasks: Task[]): Action
 };
 
 const getTask = (tasks: Task[], taskId: number): Task | null => {
-	console.log(taskId);
 	const task = tasks[taskId > 0 ? taskId - 1 : tasks.length + taskId];
 	if (!task) {
 		console.error('Task not found');
@@ -92,6 +91,7 @@ const getSubTask = (
 export type ActionActions = {
 	editTask: (id: number, task: Pick<Task, 'name' | 'urgency'>) => void;
 	addSubTask: (taskId: number, subTask: Pick<Task, 'name' | 'urgency'>) => void;
+	editSubTask: (taskId: number, subTaskId: number, subTask: Pick<Task, 'name' | 'urgency'>) => void;
 };
 
 export const onAction = (
@@ -102,7 +102,7 @@ export const onAction = (
 ) => {
 	if (!action) return;
 
-	const { editTask, addSubTask } = actions;
+	const { editTask, addSubTask, editSubTask } = actions;
 	const { type, task, subTask } = action;
 
 	const newTask: Pick<Task, 'name' | 'urgency'> = {
@@ -112,9 +112,8 @@ export const onAction = (
 
 	switch (type) {
 		case 'edit':
-			if (!subTask) {
-				editTask(task.id, newTask);
-			}
+			if (!subTask) editTask(task.id, newTask);
+			else editSubTask(task.id, subTask.id, newTask);
 			break;
 		case 'createSub':
 			addSubTask(task.id, newTask);
@@ -124,7 +123,7 @@ export const onAction = (
 	}
 };
 
-type UrgencyEditActions = Pick<ActionActions, 'editTask'>;
+type UrgencyEditActions = Pick<ActionActions, 'editTask' | 'editSubTask'>;
 
 export const onUrgencyEdit = (
 	action: Action,
@@ -132,7 +131,7 @@ export const onUrgencyEdit = (
 	actions: UrgencyEditActions
 ) => {
 	const { task, subTask } = action;
-	const { editTask } = actions;
+	const { editTask, editSubTask } = actions;
 
 	const newTask: Pick<Task, 'name' | 'urgency'> = {
 		name: subTask ? subTask.name : task.name,
@@ -140,4 +139,5 @@ export const onUrgencyEdit = (
 	};
 
 	if (!subTask) editTask(task.id, newTask);
+	else editSubTask(task.id, subTask.id, newTask);
 };

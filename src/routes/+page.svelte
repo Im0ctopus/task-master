@@ -11,7 +11,7 @@
 </script>
 
 <script lang="ts">
-	import TaskInput from '$lib/components/taskInput.svelte';
+	import TaskInput, { type InputActions } from '$lib/components/taskInput.svelte';
 	import type { Status } from '$lib/types/status';
 	import { bindManager, type BindActions } from '$lib/utils/bindManager';
 	import { getObjFromLocalStorage, saveObjOnLocalStorage } from '$lib/utils/localStorageHelper';
@@ -92,8 +92,7 @@
 			return;
 		}
 
-		const { name, urgency } = newTask;
-		tasks[taskIndex] = { ...tasks[taskIndex], name, urgency };
+		tasks[taskIndex] = { ...tasks[taskIndex], ...newTask };
 		saveObjOnLocalStorage('tasks', tasks);
 
 		action = null;
@@ -121,10 +120,32 @@
 		subTaskId: number,
 		subTask: Pick<Task, 'name' | 'urgency'>
 	) => {
-		// TODO:
+		const taskIndex = tasks.findIndex((t) => t.id === taskId);
+		if (taskIndex === -1) {
+			console.error(`Task with id ${taskId} not found`);
+			return;
+		}
 
+		const subTaskIndex = tasks[taskIndex].subTasks.findIndex((t) => t.id === subTaskId);
+		if (subTaskIndex === -1) {
+			console.error(`Subtask with id ${subTaskId} not found in task ${taskId}`);
+			return;
+		}
+
+		const oldSubTask = tasks[taskIndex].subTasks[subTaskIndex];
+		tasks[taskIndex].subTasks[subTaskIndex] = { ...oldSubTask, ...subTask };
+
+		action = null;
 		!openedTasks.includes(taskId) && openedTasks.push(taskId);
 	};
+
+	let inputActions: InputActions = $derived({
+		addSubTask,
+		addTask,
+		editTask,
+		toggleIsTyping,
+		editSubTask
+	});
 </script>
 
 <div class="flex h-screen w-full flex-col items-center justify-start overflow-clip font-main">
@@ -133,14 +154,6 @@
 		<TaskList {filteredTasks} bind:openedTasks />
 	</div>
 	<div class="w-full max-w-4xl shrink-0 px-3 lg:px-0">
-		<TaskInput
-			bind:inputRef
-			{toggleIsTyping}
-			{addTask}
-			{editTask}
-			{addSubTask}
-			{filteredTasks}
-			bind:action
-		/>
+		<TaskInput bind:inputRef {filteredTasks} bind:action actions={inputActions} />
 	</div>
 </div>
