@@ -6,6 +6,7 @@
 	import SubTasksList from './subTasks/subTasksList.svelte';
 	import { getContext } from 'svelte';
 	import type { TaskContext } from '$lib/types/taskContext';
+	import { stopFocus } from '$lib/utils/stopFocus';
 
 	type Props = {
 		task: Task;
@@ -48,7 +49,7 @@
 		</div>
 		<div class="flex items-center justify-center gap-1">
 			<button
-				onfocus={(e) => e.currentTarget.blur()}
+				onfocus={stopFocus}
 				onclick={() => toggleTaskOpen(id)}
 				disabled={!subTasks.length}
 				class="p-0.5"

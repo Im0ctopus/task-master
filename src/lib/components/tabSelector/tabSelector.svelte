@@ -12,6 +12,7 @@
 
 <script lang="ts">
 	import type { Status } from '$lib/types/status';
+	import { stopFocus } from '$lib/utils/stopFocus';
 
 	type Props = {
 		selectedTab: Status;
@@ -25,6 +26,7 @@
 >
 	{#each tabs as { label, value }, index (index)}
 		<button
+			onfocus={stopFocus}
 			id="tab_{value}"
 			class="rounded p-1 transition-colors duration-150 ease-out {selectedTab !== value &&
 				'cursor-pointer text-neutral-500'}"

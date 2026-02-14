@@ -6,6 +6,7 @@
 		type Action,
 		type ActionActions
 	} from '$lib/utils/actionsHelper';
+	import { stopFocus } from '$lib/utils/stopFocus';
 	import { urgencies } from '$lib/utils/urgencies';
 	import type { Task } from '../../routes/+page.svelte';
 
@@ -126,7 +127,11 @@
 				<p class="min-w-0 truncate">
 					{`${action.type} - ${action.task.name}${action.subTask ? `/${action.subTask.name}` : ''}`}
 				</p>
-				<button onclick={() => (action = null)} class="shrink-0 hover:text-neutral-300">
+				<button
+					onfocus={stopFocus}
+					onclick={() => (action = null)}
+					class="shrink-0 hover:text-neutral-300"
+				>
 					<X size="1rem" />
 				</button>
 			</div>
@@ -160,6 +165,7 @@
 			{/each}
 		</div>
 		<button
+			onfocus={stopFocus}
 			onclick={(e) => {
 				e.stopPropagation();
 				onEnter();

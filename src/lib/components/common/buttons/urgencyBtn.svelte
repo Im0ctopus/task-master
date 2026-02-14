@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { stopFocus } from '$lib/utils/stopFocus';
+
 	type Props = {
 		value: string;
 		label: string;
@@ -15,6 +17,7 @@
 </script>
 
 <button
+	onfocus={stopFocus}
 	aria-label={value}
 	onclick={handleClick}
 	class="rounded px-1 py-0.5 text-sm {selected
