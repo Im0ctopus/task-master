@@ -6,8 +6,8 @@ export const taskVariations: {
 		icon: string;
 	};
 } = {
-	none: { className: 'bg-neutral-700/30', icon: '-' },
-	started: { className: '', icon: '' },
-	canceled: { className: '', icon: '' },
-	done: { className: '', icon: '' }
+	none: { className: 'bg-neutral-700/30 text-neutral-600', icon: '-' },
+	started: { className: 'bg-yellow-900/15 text-yellow-700', icon: ':' },
+	canceled: { className: 'bg-red-900/20 text-red-700', icon: 'x' },
+	done: { className: 'bg-green-900/10 text-green-700', icon: '#' }
 };

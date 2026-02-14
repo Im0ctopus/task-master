@@ -28,10 +28,10 @@
 		'outline outline-neutral-500'}"
 >
 	<div class="flex min-w-0 items-center justify-center gap-2">
-		<p class="text-xs text-neutral-600">
+		<p class="text-xs">
 			{taskVariation.icon}
 		</p>
-		<p class="truncate">
+		<p class="truncate text-neutral-200">
 			{name}
 		</p>
 		{#if urgency}

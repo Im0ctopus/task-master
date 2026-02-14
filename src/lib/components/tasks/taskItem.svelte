@@ -32,10 +32,10 @@
 >
 	<div class="flex items-center justify-between gap-2 py-2.5">
 		<div class="flex min-w-0 items-center justify-center gap-2">
-			<p class="text-xs text-neutral-600">
+			<p class="text-xs">
 				{taskVariation.icon}
 			</p>
-			<p class="truncate">
+			<p class="truncate text-neutral-200">
 				{name}
 			</p>
 			{#if urgency}
@@ -54,8 +54,8 @@
 				<ChevronDown
 					size="1.2rem"
 					class="{!isOpen &&
-						'rotate-180'} transition-[rotate] duration-150 ease-out {!subTasks.length &&
-						'text-neutral-700'}"
+						'rotate-180'} text-neutral-200 transition-[rotate] duration-150 ease-out {!subTasks.length &&
+						'opacity-20'}"
 				/>
 			</button>
 		</div>
