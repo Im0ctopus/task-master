@@ -1,7 +1,5 @@
 <script lang="ts">
-	import { getContext } from 'svelte';
 	import type { SubTask } from '../../../../routes/+page.svelte';
-	import type { Status } from '$lib/types/status';
 	import SubTaskItem from './subTaskItem.svelte';
 
 	type Props = {
@@ -11,13 +9,10 @@
 	};
 
 	let { subTasks, isOpen, taskIndex }: Props = $props();
-	const getSelectedTab: () => Status = getContext('getSelectedTab');
 
 	let animateOpen = $state();
 	let render = $state(false);
 	let subTaskListRef: HTMLElement | null = $state(null);
-
-	let filteredSubTasks = $derived(subTasks.filter((t) => t.status === getSelectedTab()));
 
 	$effect(() => {
 		if (!isOpen) {
@@ -46,7 +41,7 @@
 			<div bind:this={subTaskListRef} class="px-1 pb-2.5">
 				<p class="pb-1 text-xs text-neutral-500">Subtasks</p>
 				<div class="flex flex-col items-center justify-center gap-2">
-					{#each filteredSubTasks as task, index (task.id)}
+					{#each subTasks as task, index (task.id)}
 						<SubTaskItem {task} {index} {taskIndex} />
 					{/each}
 				</div>

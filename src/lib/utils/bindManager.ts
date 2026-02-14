@@ -5,7 +5,7 @@ import type { SelectedTask } from '$lib/types/taskContext';
 export type BindActions = {
 	toggleIsTyping: (val: boolean) => void;
 	onTabChange: (tab: Status) => void;
-	onStatusChange: (status: Status, taskId: number, subTaskId?: number) => void;
+	onStatusChange: (status: Status, taskIndex: number, subTaskIndex?: number) => void;
 	onTaskChange: (goto: -1 | 1, skip?: boolean) => void;
 	toggleTaskOpen: (index: number) => void;
 };
@@ -49,9 +49,20 @@ export const bindManager = (e: KeyboardEvent, selectedTask: SelectedTask, action
 				toggleTaskOpen(selectedTask.taskIndex);
 				break;
 			}
+			case 'n': {
+				onStatusChange('none', selectedTask.taskIndex, selectedTask.subTaskIndex);
+				break;
+			}
 			case 's': {
-				// FIXME: Not working at all
 				onStatusChange('started', selectedTask.taskIndex, selectedTask.subTaskIndex);
+				break;
+			}
+			case 'd': {
+				onStatusChange('done', selectedTask.taskIndex, selectedTask.subTaskIndex);
+				break;
+			}
+			case 'c': {
+				onStatusChange('canceled', selectedTask.taskIndex, selectedTask.subTaskIndex);
 				break;
 			}
 			default: {

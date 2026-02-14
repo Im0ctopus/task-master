@@ -20,6 +20,7 @@
 	import TaskList from '$lib/components/tasks/taskList.svelte';
 	import { onMount, setContext } from 'svelte';
 	import { defaultSelectedTask, type SelectedTask, type TaskContext } from '$lib/types/taskContext';
+	import { filterTasks, verifyNewSelection } from '$lib/utils/tasksHelper';
 
 	let tasks: Task[] = $state([]);
 	let isTyping = $state(false);
@@ -30,11 +31,7 @@
 
 	let currentId: number = 0;
 
-	let filteredTasks: Task[] = $derived(
-		tasks.filter(
-			(t) => t.status === selectedTab || t.subTasks.some((s) => s.status === selectedTab)
-		)
-	);
+	let filteredTasks: Task[] = $derived(filterTasks(tasks, selectedTab));
 
 	// svelte-ignore non_reactive_update
 	let inputRef: HTMLTextAreaElement;
@@ -147,30 +144,40 @@
 		const oldSubTask = tasks[taskIndex].subTasks[subTaskIndex];
 		tasks[taskIndex].subTasks[subTaskIndex] = { ...oldSubTask, ...subTask };
 
+		saveObjOnLocalStorage('tasks', tasks);
 		action = null;
 		!openedTasks.includes(taskId) && openedTasks.push(taskId);
 	};
 
-	const onStatusChange = (status: Status, taskId: number, subTaskId?: number) => {
-		const taskIndex = tasks.findIndex((t) => t.id === taskId);
-		if (taskIndex === -1) {
-			console.error(`Task with id ${taskId} not found`);
+	const onStatusChange = (status: Status, taskIndex: number, subTaskIndex?: number) => {
+		const task = filteredTasks[taskIndex];
+		if (!task) {
+			console.error(`Task with index ${taskIndex} not found`);
 			return;
 		}
+		const taskInd = tasks.findIndex((t) => t.id === task.id);
 
-		if (!subTaskId) tasks[taskIndex] = { ...tasks[taskIndex], status };
-		else {
-			const subTaskIndex = tasks[taskIndex].subTasks.findIndex((t) => t.id === subTaskId);
-			if (subTaskIndex === -1) {
-				console.error(`Subtask with id ${subTaskId} not found in task ${taskId}`);
+		if (subTaskIndex === undefined) {
+			tasks[taskInd] = {
+				...tasks[taskInd],
+				status: tasks[taskInd].status === status ? 'none' : status
+			};
+		} else {
+			const subTask = task.subTasks[subTaskIndex];
+			if (!subTask) {
+				console.error(`Subtask with index ${subTaskIndex} not found in task ${task.id}`);
 				return;
 			}
 
-			tasks[taskIndex].subTasks[subTaskIndex] = {
-				...tasks[taskIndex].subTasks[subTaskIndex],
-				status
+			const subTaskInd = tasks[taskInd].subTasks.findIndex((t) => t.id === subTask.id);
+			tasks[taskInd].subTasks[subTaskInd] = {
+				...tasks[taskInd].subTasks[subTaskInd],
+				status: tasks[taskInd].subTasks[subTaskInd].status === status ? 'none' : status
 			};
 		}
+
+		saveObjOnLocalStorage('tasks', tasks);
+		selectedTask = verifyNewSelection(filteredTasks, selectedTask);
 	};
 
 	const onTaskChange = (goto: -1 | 1, skip?: boolean) => {
@@ -213,7 +220,8 @@
 
 	const toggleTaskOpen = (id: number) => {
 		const task = tasks.find((t) => t.id === id);
-		if (!task || !task.subTasks.length) return;
+		const filteredTask = filteredTasks.find((t) => t.id === id);
+		if (!task || !filteredTask?.subTasks.length) return;
 
 		if (!openedTasks.includes(id)) openedTasks.push(id);
 		else {

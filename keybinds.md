@@ -6,6 +6,20 @@ KeyBind - Action
 
 - esc - Blur input
 
+- enter - Open/close task details
+
+- up/down - Navigate between subTasks
+
+- ctrl + up/down - Navigate between tasks (skip subtasks)
+
+- s - Toggle task status to started
+
+- c - Toggle task status to canceled
+
+- d - Toggle task status to done
+
+- n - Change task status to none
+
 ## Input actions
 
 Input - Action
