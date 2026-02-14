@@ -22,16 +22,18 @@
 </script>
 
 <div
-	class="flex w-full min-w-0 cursor-default items-center justify-between gap-2 rounded px-3 py-2.5 {taskVariation.className} {selectedTask.taskIndex ===
+	class="flex w-full min-w-0 cursor-default items-center justify-between gap-2 rounded px-3 py-2.5 {taskVariation.bgColor} {selectedTask.taskIndex ===
 		taskIndex &&
 		selectedTask.subTaskIndex === index &&
 		'outline outline-neutral-500'}"
 >
 	<div class="flex min-w-0 items-center justify-center gap-2">
-		<p class="text-xs">
+		<p
+			class="flex aspect-square min-h-0 w-4 items-center justify-center rounded text-sm {taskVariation.iconClass}"
+		>
 			{taskVariation.icon}
 		</p>
-		<p class="truncate text-neutral-200">
+		<p class="truncate">
 			{name}
 		</p>
 		{#if urgency}

@@ -1,13 +1,15 @@
 import type { Status } from '$lib/types/status';
 
-export const taskVariations: {
-	[key in Status]: {
-		className: string;
+export const taskVariations: Record<
+	Status,
+	{
+		bgColor: string;
+		iconClass: string;
 		icon: string;
-	};
-} = {
-	none: { className: 'bg-neutral-700/30 text-neutral-600', icon: '-' },
-	started: { className: 'bg-yellow-900/15 text-yellow-700', icon: ':' },
-	canceled: { className: 'bg-red-900/20 text-red-700', icon: 'x' },
-	done: { className: 'bg-green-900/10 text-green-700', icon: '#' }
+	}
+> = {
+	none: { bgColor: 'bg-neutral-700/25', iconClass: 'text-neutral-200 bg-neutral-700', icon: '-' },
+	started: { bgColor: 'bg-yellow-900/25', iconClass: 'text-yellow-500 bg-yellow-900', icon: ':' },
+	canceled: { bgColor: 'bg-red-900/25', iconClass: 'text-red-400 bg-red-900', icon: 'x' },
+	done: { bgColor: 'bg-green-900/25', iconClass: 'text-green-500 bg-green-900', icon: '#' }
 };

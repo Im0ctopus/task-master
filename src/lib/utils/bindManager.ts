@@ -18,6 +18,7 @@ export const bindManager = (e: KeyboardEvent, selectedTask: SelectedTask, action
 
 	if (ctrlKey) {
 		switch (key) {
+			case ' ':
 			case 'Enter': {
 				toggleIsTyping(true);
 				break;
@@ -45,6 +46,7 @@ export const bindManager = (e: KeyboardEvent, selectedTask: SelectedTask, action
 				onTaskChange(1);
 				break;
 			}
+			case ' ':
 			case 'Enter': {
 				toggleTaskOpen(selectedTask.taskIndex);
 				break;
