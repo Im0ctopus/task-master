@@ -30,9 +30,16 @@
 		filteredTasks: Task[];
 		action: null | Action;
 		actions: InputActions;
+		toggleSearch: (value: boolean) => void;
 	};
 
-	let { inputRef = $bindable(), filteredTasks, action = $bindable(), actions }: Props = $props();
+	let {
+		inputRef = $bindable(),
+		filteredTasks,
+		action = $bindable(),
+		actions,
+		toggleSearch
+	}: Props = $props();
 
 	let value: string = $state('');
 	let urgency: null | string = $state(null);
@@ -93,15 +100,30 @@
 	};
 
 	const onKeyDown = (e: KeyboardEvent) => {
-		const key = e.key;
+		const { key, ctrlKey } = e;
 
-		if (key === 'Enter') {
-			e.preventDefault();
-			onEnter();
-		} else if (key === 'Escape') onBlur();
-		else if (value === '' && key === 'Backspace') {
-			if (action) action = null;
-			else onBlur();
+		switch (true) {
+			case key === 'Enter': {
+				e.preventDefault();
+				onEnter();
+				break;
+			}
+			case key === 'Escape': {
+				onBlur();
+				break;
+			}
+			case value === '' && key === 'Backspace': {
+				if (action) action = null;
+				else onBlur();
+				break;
+			}
+			case ctrlKey && key === 'f': {
+				e.preventDefault();
+				inputRef.blur();
+				setTimeout(() => toggleSearch(true), 10);
+
+				break;
+			}
 		}
 	};
 

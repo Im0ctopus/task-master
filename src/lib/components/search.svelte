@@ -8,6 +8,7 @@
 		onBlur: () => void;
 		onClose: () => void;
 		taskAmount: number;
+		toggleIsTyping: (value: boolean) => void;
 	};
 
 	let {
@@ -16,7 +17,8 @@
 		onBlur,
 		searchInputRef = $bindable(),
 		onClose,
-		taskAmount
+		taskAmount,
+		toggleIsTyping
 	}: Props = $props();
 
 	let render = $state(false);
@@ -52,11 +54,19 @@
 			return;
 		}
 
-		switch (key) {
-			case 'Enter':
-			case 'Escape': {
+		switch (true) {
+			case ctrlKey && key === 'f': {
+				e.preventDefault();
+				return;
+			}
+			case ctrlKey && key === 'Enter': {
+				searchInputRef.blur();
+				setTimeout(() => toggleIsTyping(true), 10);
+				break;
+			}
+			case key === 'Enter':
+			case key === 'Escape': {
 				handleBlur();
-
 				break;
 			}
 		}
@@ -78,6 +88,7 @@
 			onkeydown={onKeyDown}
 			bind:value={searchValue}
 			bind:this={searchInputRef}
+			placeholder="Find"
 		/>
 		<p class="w-16 text-sm {!taskAmount && 'text-red-300'} ">
 			{searchValue.trim() !== '' ? taskAmount || 'No results' : ''}

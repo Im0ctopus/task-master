@@ -267,7 +267,7 @@
 		<TaskList {filteredTasks} {openedTasks} {toggleTaskOpen} />
 	</div>
 	<div class="w-full max-w-4xl shrink-0 px-3 lg:px-0">
-		<TaskInput bind:inputRef {filteredTasks} bind:action actions={inputActions} />
+		<TaskInput bind:inputRef {filteredTasks} bind:action actions={inputActions} {toggleSearch} />
 	</div>
 </div>
 
@@ -278,4 +278,5 @@
 	onBlur={() => setTimeout(() => (isTyping = false), 10)}
 	onClose={() => toggleSearch(false)}
 	taskAmount={filteredTasks.length}
+	{toggleIsTyping}
 />
