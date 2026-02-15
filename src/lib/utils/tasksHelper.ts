@@ -2,14 +2,18 @@ import type { Status } from '$lib/types/status';
 import type { SelectedTask } from '$lib/types/taskContext';
 import type { Task } from '../../routes/+page.svelte';
 
-export const filterTasks = (tasks: Task[], tab: Status): Task[] => {
+export const filterTasks = (tasks: Task[], tab: Status, searchValue: string): Task[] => {
 	const filteredSubtasksTasks = tasks.map((t) => ({
 		...t,
-		subTasks: t.subTasks.filter((st) => t.status === 'canceled' || st.status === tab)
+		subTasks: t.subTasks.filter(
+			(st) => (t.status === 'canceled' || st.status === tab) && st.name.includes(searchValue)
+		)
 	}));
 
 	return filteredSubtasksTasks.filter(
-		(t) => t.status === tab || (t.status !== 'canceled' && t.subTasks.some((s) => s.status === tab))
+		(t) =>
+			(t.status === tab && t.name.includes(searchValue)) ||
+			(t.status !== 'canceled' && t.subTasks.some((s) => s.status === tab))
 	);
 };
 

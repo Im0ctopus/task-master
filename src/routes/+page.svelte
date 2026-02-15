@@ -21,9 +21,12 @@
 	import { onMount, setContext } from 'svelte';
 	import { defaultSelectedTask, type SelectedTask, type TaskContext } from '$lib/types/taskContext';
 	import { filterTasks, verifyNewSelection } from '$lib/utils/tasksHelper';
+	import Search from '$lib/components/search.svelte';
 
 	let tasks: Task[] = $state([]);
 	let isTyping = $state(false);
+	let isSearching = $state(false);
+	let searchValue = $state('');
 	let selectedTask: SelectedTask = $state(defaultSelectedTask);
 	let openedTasks: number[] = $state([]);
 	let action: null | Action = $state(null);
@@ -31,10 +34,12 @@
 
 	let currentId: number = 0;
 
-	let filteredTasks: Task[] = $derived(filterTasks(tasks, selectedTab));
+	let filteredTasks: Task[] = $derived(filterTasks(tasks, selectedTab, searchValue.trim()));
 
 	// svelte-ignore non_reactive_update
 	let inputRef: HTMLTextAreaElement;
+	// svelte-ignore non_reactive_update
+	let searchInputRef: HTMLInputElement;
 
 	setContext('getSelectedTab', () => selectedTab);
 
@@ -71,21 +76,20 @@
 				if (!task) return;
 
 				toggleTaskOpen(task.id);
-			}
+			},
+			toggleSearch
 		};
 
 		bindManager(e, selectedTask, actions);
 	};
 
 	let toggleIsTyping = (val: boolean) => {
-		isTyping = val;
+		if (!val) setTimeout(() => (isTyping = false), 10);
+		else isTyping = val;
 		val ? inputRef.focus() : inputRef.blur();
 	};
 
-	let onTabChange = (tab: Status) => {
-		selectedTab = tab;
-		selectedTask = defaultSelectedTask;
-	};
+	let onTabChange = (tab: Status) => (selectedTab = tab);
 
 	const addTask = (task: Pick<Task, 'name' | 'urgency'>) => {
 		const id = ++currentId;
@@ -232,6 +236,22 @@
 		}
 	};
 
+	const toggleSearch = (value: boolean) => {
+		if (value && searchInputRef) searchInputRef.focus();
+
+		if (!value) searchValue = '';
+
+		isSearching = value;
+		isTyping = value;
+	};
+
+	$effect(() => {
+		searchValue;
+		selectedTab;
+
+		selectedTask = defaultSelectedTask;
+	});
+
 	let inputActions: InputActions = $derived({
 		addSubTask,
 		addTask,
@@ -250,3 +270,12 @@
 		<TaskInput bind:inputRef {filteredTasks} bind:action actions={inputActions} />
 	</div>
 </div>
+
+<Search
+	bind:searchInputRef
+	{isSearching}
+	bind:searchValue
+	onBlur={() => setTimeout(() => (isTyping = false), 10)}
+	onClose={() => toggleSearch(false)}
+	taskAmount={filteredTasks.length}
+/>

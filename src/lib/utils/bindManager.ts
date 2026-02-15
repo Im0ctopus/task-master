@@ -8,11 +8,19 @@ export type BindActions = {
 	onStatusChange: (status: Status, taskIndex: number, subTaskIndex?: number) => void;
 	onTaskChange: (goto: -1 | 1, skip?: boolean) => void;
 	toggleTaskOpen: (index: number) => void;
+	toggleSearch: (value: boolean) => void;
 };
 
 export const bindManager = (e: KeyboardEvent, selectedTask: SelectedTask, actions: BindActions) => {
 	const { key, ctrlKey } = e;
-	const { toggleIsTyping, onTabChange, onStatusChange, onTaskChange, toggleTaskOpen } = actions;
+	const {
+		toggleIsTyping,
+		onTabChange,
+		onStatusChange,
+		onTaskChange,
+		toggleTaskOpen,
+		toggleSearch
+	} = actions;
 
 	// console.log(key);
 
@@ -31,6 +39,11 @@ export const bindManager = (e: KeyboardEvent, selectedTask: SelectedTask, action
 			case 'ArrowDown': {
 				e.preventDefault();
 				onTaskChange(1, true);
+				break;
+			}
+			case 'f': {
+				e.preventDefault();
+				toggleSearch(true);
 				break;
 			}
 		}
@@ -65,6 +78,10 @@ export const bindManager = (e: KeyboardEvent, selectedTask: SelectedTask, action
 			}
 			case 'c': {
 				onStatusChange('canceled', selectedTask.taskIndex, selectedTask.subTaskIndex);
+				break;
+			}
+			case 'Escape': {
+				toggleSearch(false);
 				break;
 			}
 			default: {
