@@ -50,6 +50,10 @@ export const enterAction = (trimmedValue: string, filteredTasks: Task[]): Action
 			console.error('Task not found');
 			return;
 		}
+		if (task.status === 'canceled' || task.status === 'done') {
+			console.error(`Cannot add subtask to a task with status ${task.status}`);
+			return;
+		}
 
 		return {
 			type: 'createSub',
