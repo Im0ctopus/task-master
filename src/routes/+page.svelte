@@ -116,6 +116,9 @@
 		const newTasks: Task[] = [...tasks, { ...task, id, status: 'none', subTasks: [] }];
 		tasks = newTasks;
 		saveObjOnLocalStorage('tasks', newTasks);
+
+		onTabChange('none');
+		setTimeout(() => (selectedTask = { taskIndex: filteredTasks.length - 1 }), 10);
 	};
 
 	const editTask = (id: number, newTask: Pick<Task, 'name' | 'urgency'>) => {
@@ -146,6 +149,12 @@
 
 		saveObjOnLocalStorage('tasks', tasks);
 		!openedTasks.includes(taskId) && openedTasks.push(taskId);
+
+		onTabChange('none');
+		setTimeout(() => {
+			const index = filteredTasks.findIndex((t) => t.id === taskId);
+			selectedTask = { taskIndex: index, subTaskIndex: filteredTasks[index].subTasks.length - 1 };
+		}, 10);
 	};
 
 	const editSubTask = (

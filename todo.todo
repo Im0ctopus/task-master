@@ -1,8 +1,6 @@
 
 
 todos:
-  [ ] Save currentTab on localhost
-  [ ] Loading view getting from the localStorage
   [ ] When changing the status of a task/subtask, there should be a delay and animation
   [ ] Toasts in console.errors
   [ ] r to remove => can only remove canceled tasks/subtasks
