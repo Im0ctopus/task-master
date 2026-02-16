@@ -1,13 +1,15 @@
 
 
 todos:
-  [ ] Add keyBinds for actions
-  [ ] @low animate action's visual feedback
   [ ] Save currentTab on localhost
   [ ] Loading view getting from the localStorage
   [ ] When changing the status of a task/subtask, there should be a delay and animation
   [ ] Toasts in console.errors
   [ ] r to remove => can only remove canceled tasks/subtasks
+  [ ] Move tasks up/down
+  [ ] GOTO task
   
+  [ ] @low animate action's visual feedback
+
   [ ] Add multiple projects support
   [ ] mobile

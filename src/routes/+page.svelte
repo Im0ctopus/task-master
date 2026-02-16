@@ -14,7 +14,12 @@
 	import TaskInput, { type InputActions } from '$lib/components/taskInput.svelte';
 	import type { Status } from '$lib/types/status';
 	import { bindManager, type BindActions } from '$lib/utils/bindManager';
-	import { getObjFromLocalStorage, saveObjOnLocalStorage } from '$lib/utils/localStorageHelper';
+	import {
+		getItemFromLocalStorage,
+		getObjFromLocalStorage,
+		saveItemLocalStorage,
+		saveObjOnLocalStorage
+	} from '$lib/utils/localStorageHelper';
 	import { enterAction, type Action } from '$lib/utils/actionsHelper';
 	import TabSelector from '$lib/components/tabSelector/tabSelector.svelte';
 	import TaskList from '$lib/components/tasks/taskList.svelte';
@@ -33,6 +38,7 @@
 	let openedTasks: number[] = $state([]);
 	let action: null | Action = $state(null);
 	let selectedTab: Status = $state('none');
+	let isReady = $state(false);
 
 	let currentId: number = 0;
 
@@ -54,9 +60,22 @@
 
 	onMount(() => {
 		const storedTasks = getObjFromLocalStorage('tasks');
-		if (!storedTasks) return;
-		tasks = storedTasks;
-		if (storedTasks && storedTasks.length) currentId = Math.max(...tasks.map((t) => t.id));
+		const storedTab = getItemFromLocalStorage('tab');
+
+		if (storedTasks) {
+			tasks = storedTasks;
+			if (storedTasks && storedTasks.length) currentId = Math.max(...tasks.map((t) => t.id));
+		}
+
+		if (
+			storedTab === 'none' ||
+			storedTab === 'started' ||
+			storedTab === 'done' ||
+			storedTab === 'canceled'
+		)
+			selectedTab = storedTab;
+
+		isReady = true;
 	});
 
 	$effect(() => {
@@ -87,7 +106,10 @@
 		val ? inputRef.focus() : inputRef.blur();
 	};
 
-	const onTabChange = (tab: Status) => (selectedTab = tab);
+	const onTabChange = (tab: Status) => {
+		selectedTab = tab;
+		saveItemLocalStorage('tab', tab);
+	};
 
 	const addTask = (task: Pick<Task, 'name' | 'urgency'>) => {
 		const id = ++currentId;
@@ -278,30 +300,32 @@
 	});
 </script>
 
-<div class="flex h-screen w-full flex-col items-center justify-start overflow-clip font-main">
-	<TabSelector bind:selectedTab />
-	<div class="relative min-h-0 w-full grow">
-		<TaskList {filteredTasks} {openedTasks} {toggleTaskOpen} />
+{#if isReady}
+	<div class="flex h-screen w-full flex-col items-center justify-start overflow-clip font-main">
+		<TabSelector {selectedTab} {onTabChange} />
+		<div class="relative min-h-0 w-full grow">
+			<TaskList {filteredTasks} {openedTasks} {toggleTaskOpen} />
+		</div>
+		<div class="w-full max-w-4xl shrink-0 px-3 lg:px-0">
+			<TaskInput
+				bind:value
+				bind:urgency
+				bind:inputRef
+				{filteredTasks}
+				bind:action
+				actions={inputActions}
+				{toggleSearch}
+			/>
+		</div>
 	</div>
-	<div class="w-full max-w-4xl shrink-0 px-3 lg:px-0">
-		<TaskInput
-			bind:value
-			bind:urgency
-			bind:inputRef
-			{filteredTasks}
-			bind:action
-			actions={inputActions}
-			{toggleSearch}
-		/>
-	</div>
-</div>
 
-<Search
-	bind:searchInputRef
-	{isSearching}
-	bind:searchValue
-	onBlur={() => setTimeout(() => (isTyping = false), 10)}
-	onClose={() => toggleSearch(false)}
-	taskAmount={filteredTasks.length}
-	{toggleIsTyping}
-/>
+	<Search
+		bind:searchInputRef
+		{isSearching}
+		bind:searchValue
+		onBlur={() => setTimeout(() => (isTyping = false), 10)}
+		onClose={() => toggleSearch(false)}
+		taskAmount={filteredTasks.length}
+		{toggleIsTyping}
+	/>
+{/if}

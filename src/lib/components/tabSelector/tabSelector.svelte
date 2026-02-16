@@ -16,9 +16,10 @@
 
 	type Props = {
 		selectedTab: Status;
+		onTabChange: (value: Status) => void;
 	};
 
-	let { selectedTab = $bindable() }: Props = $props();
+	let { selectedTab, onTabChange }: Props = $props();
 </script>
 
 <div
@@ -30,7 +31,7 @@
 			id="tab_{value}"
 			class="rounded p-1 transition-colors duration-150 ease-out {selectedTab !== value &&
 				'cursor-pointer text-neutral-500'}"
-			onclick={() => (selectedTab = value)}
+			onclick={() => onTabChange(value)}
 		>
 			{label}
 		</button>
