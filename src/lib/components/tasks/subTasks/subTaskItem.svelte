@@ -16,9 +16,14 @@
 	let { id, name, status, urgency } = $derived(task);
 	let taskVariation = $derived(taskVariations[status]);
 	let urgencyVariation = $derived(urgencies.find((u) => u.value === urgency));
+
 	let { getSelectedTask }: TaskContext = getContext('taskContext');
+	let getShowIds: () => boolean = getContext('getShowIds');
 
 	let selectedTask = $derived(getSelectedTask());
+
+	// svelte-ignore non_reactive_update
+	let indexP: HTMLParagraphElement;
 </script>
 
 <div
@@ -28,11 +33,21 @@
 		'outline outline-neutral-500'}"
 >
 	<div class="flex min-w-0 items-center justify-center gap-2">
-		<p
-			class="flex aspect-square min-h-0 w-4 items-center justify-center rounded text-sm {taskVariation.iconClass}"
-		>
-			{taskVariation.icon}
-		</p>
+		<div class="flex items-center justify-center">
+			<div
+				style="width: {getShowIds() ? indexP?.offsetWidth + 5 : '0'}px;"
+				class="overflow-hidden transition-[width] duration-150 ease-out"
+			>
+				<p bind:this={indexP} class="w-fit text-xs font-semibold text-neutral-400">
+					{`${taskIndex + 1}.${index + 1}`}
+				</p>
+			</div>
+			<p
+				class="flex aspect-square min-h-0 w-4 items-center justify-center rounded text-sm {taskVariation.iconClass}"
+			>
+				{taskVariation.icon}
+			</p>
+		</div>
 		<p class="truncate">
 			{name}
 		</p>

@@ -23,6 +23,7 @@
 	import { filterTasks, verifyNewSelection } from '$lib/utils/tasksHelper';
 	import Search from '$lib/components/search.svelte';
 
+	let value: string = $state('');
 	let tasks: Task[] = $state([]);
 	let isTyping = $state(false);
 	let isSearching = $state(false);
@@ -41,14 +42,14 @@
 	// svelte-ignore non_reactive_update
 	let searchInputRef: HTMLInputElement;
 
-	setContext('getSelectedTab', () => selectedTab);
-
 	const setSelectedTask = (task: SelectedTask) => (selectedTask = task);
 	let taskContext: TaskContext = {
 		getSelectedTask: () => selectedTask,
 		setSelectedTask
 	};
 	setContext('taskContext', taskContext);
+	setContext('getSelectedTab', () => selectedTab);
+	setContext('getShowIds', () => value.startsWith('/'));
 
 	onMount(() => {
 		const storedTasks = getObjFromLocalStorage('tasks');
@@ -65,7 +66,7 @@
 		};
 	});
 
-	let bindHandler = (e: KeyboardEvent) => {
+	const bindHandler = (e: KeyboardEvent) => {
 		const actions: BindActions = {
 			toggleIsTyping,
 			onTabChange,
@@ -83,13 +84,13 @@
 		bindManager(e, selectedTask, actions);
 	};
 
-	let toggleIsTyping = (val: boolean) => {
+	const toggleIsTyping = (val: boolean) => {
 		if (!val) setTimeout(() => (isTyping = false), 10);
 		else isTyping = val;
 		val ? inputRef.focus() : inputRef.blur();
 	};
 
-	let onTabChange = (tab: Status) => (selectedTab = tab);
+	const onTabChange = (tab: Status) => (selectedTab = tab);
 
 	const addTask = (task: Pick<Task, 'name' | 'urgency'>) => {
 		const id = ++currentId;
@@ -267,7 +268,14 @@
 		<TaskList {filteredTasks} {openedTasks} {toggleTaskOpen} />
 	</div>
 	<div class="w-full max-w-4xl shrink-0 px-3 lg:px-0">
-		<TaskInput bind:inputRef {filteredTasks} bind:action actions={inputActions} {toggleSearch} />
+		<TaskInput
+			bind:value
+			bind:inputRef
+			{filteredTasks}
+			bind:action
+			actions={inputActions}
+			{toggleSearch}
+		/>
 	</div>
 </div>
 
