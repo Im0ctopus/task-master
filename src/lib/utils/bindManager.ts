@@ -9,6 +9,7 @@ export type BindActions = {
 	onTaskChange: (goto: -1 | 1, skip?: boolean) => void;
 	toggleTaskOpen: (index: number) => void;
 	toggleSearch: (value: boolean) => void;
+	onAction: (newAction: string) => void;
 };
 
 export const bindManager = (e: KeyboardEvent, selectedTask: SelectedTask, actions: BindActions) => {
@@ -19,7 +20,8 @@ export const bindManager = (e: KeyboardEvent, selectedTask: SelectedTask, action
 		onStatusChange,
 		onTaskChange,
 		toggleTaskOpen,
-		toggleSearch
+		toggleSearch,
+		onAction
 	} = actions;
 
 	// console.log(key);
@@ -62,6 +64,16 @@ export const bindManager = (e: KeyboardEvent, selectedTask: SelectedTask, action
 			case ' ':
 			case 'Enter': {
 				toggleTaskOpen(selectedTask.taskIndex);
+				break;
+			}
+			case 'e': {
+				onAction(
+					`/e${selectedTask.taskIndex + 1}${selectedTask.subTaskIndex ? `.${selectedTask.subTaskIndex + 1}` : ''}`
+				);
+				break;
+			}
+			case 't': {
+				onAction(`/t${selectedTask.taskIndex + 1}`);
 				break;
 			}
 			case 'n': {

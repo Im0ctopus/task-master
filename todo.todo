@@ -2,13 +2,12 @@
 
 todos:
   [ ] Add keyBinds for actions
-  [ ] Task Input @started(26-02-01 16:49)
-    [ ] When on editing mode show the tasks indexes - aah I need to change the value to "go back" and make it into a context
   [ ] @low animate action's visual feedback
   [ ] Save currentTab on localhost
   [ ] Loading view getting from the localStorage
   [ ] When changing the status of a task/subtask, there should be a delay and animation
   [ ] Toasts in console.errors
+  [ ] r to remove => can only remove canceled tasks/subtasks
   
   [ ] Add multiple projects support
   [ ] mobile

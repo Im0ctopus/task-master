@@ -27,6 +27,7 @@
 
 	type Props = {
 		value: string;
+		urgency: null | string;
 		inputRef: HTMLTextAreaElement;
 		filteredTasks: Task[];
 		action: null | Action;
@@ -36,14 +37,13 @@
 
 	let {
 		value = $bindable(),
+		urgency = $bindable(),
 		inputRef = $bindable(),
 		filteredTasks,
 		action = $bindable(),
 		actions,
 		toggleSearch
 	}: Props = $props();
-
-	let urgency: null | string = $state(null);
 
 	let { addSubTask, addTask, editTask, toggleIsTyping, editSubTask } = $derived(actions);
 

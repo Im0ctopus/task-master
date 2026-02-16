@@ -15,7 +15,7 @@
 	import type { Status } from '$lib/types/status';
 	import { bindManager, type BindActions } from '$lib/utils/bindManager';
 	import { getObjFromLocalStorage, saveObjOnLocalStorage } from '$lib/utils/localStorageHelper';
-	import { type Action } from '$lib/utils/actionsHelper';
+	import { enterAction, type Action } from '$lib/utils/actionsHelper';
 	import TabSelector from '$lib/components/tabSelector/tabSelector.svelte';
 	import TaskList from '$lib/components/tasks/taskList.svelte';
 	import { onMount, setContext } from 'svelte';
@@ -24,6 +24,7 @@
 	import Search from '$lib/components/search.svelte';
 
 	let value: string = $state('');
+	let urgency: null | string = $state(null);
 	let tasks: Task[] = $state([]);
 	let isTyping = $state(false);
 	let isSearching = $state(false);
@@ -72,13 +73,9 @@
 			onTabChange,
 			onStatusChange,
 			onTaskChange,
-			toggleTaskOpen: (index: number) => {
-				const task = filteredTasks[index];
-				if (!task) return;
-
-				toggleTaskOpen(task.id);
-			},
-			toggleSearch
+			toggleTaskOpen: toggleTaskIndex,
+			toggleSearch,
+			onAction
 		};
 
 		bindManager(e, selectedTask, actions);
@@ -237,6 +234,25 @@
 		}
 	};
 
+	const toggleTaskIndex = (index: number) => {
+		const task = filteredTasks[index];
+		if (!task) return;
+
+		toggleTaskOpen(task.id);
+	};
+
+	const onAction = (newAction: string) => {
+		action = enterAction(newAction, filteredTasks) || null;
+		if (!action) return;
+
+		if (action.type === 'edit') {
+			value = action.subTask ? action.subTask.name : action.task.name;
+			urgency = action.subTask ? action.subTask.urgency : action.task.urgency;
+		}
+
+		setTimeout(() => toggleIsTyping(true), 10);
+	};
+
 	const toggleSearch = (value: boolean) => {
 		if (value && searchInputRef) searchInputRef.focus();
 
@@ -270,6 +286,7 @@
 	<div class="w-full max-w-4xl shrink-0 px-3 lg:px-0">
 		<TaskInput
 			bind:value
+			bind:urgency
 			bind:inputRef
 			{filteredTasks}
 			bind:action
