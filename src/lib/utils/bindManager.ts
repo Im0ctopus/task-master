@@ -10,6 +10,7 @@ export type BindActions = {
 	toggleTaskOpen: (index: number) => void;
 	toggleSearch: (value: boolean) => void;
 	onAction: (newAction: string) => void;
+	removeTask: (selectedTask: SelectedTask) => void;
 };
 
 export const bindManager = (e: KeyboardEvent, selectedTask: SelectedTask, actions: BindActions) => {
@@ -21,7 +22,8 @@ export const bindManager = (e: KeyboardEvent, selectedTask: SelectedTask, action
 		onTaskChange,
 		toggleTaskOpen,
 		toggleSearch,
-		onAction
+		onAction,
+		removeTask
 	} = actions;
 
 	// console.log(key);
@@ -90,6 +92,10 @@ export const bindManager = (e: KeyboardEvent, selectedTask: SelectedTask, action
 			}
 			case 'c': {
 				onStatusChange('canceled', selectedTask.taskIndex, selectedTask.subTaskIndex);
+				break;
+			}
+			case 'r': {
+				removeTask(selectedTask);
 				break;
 			}
 			case 'Escape': {

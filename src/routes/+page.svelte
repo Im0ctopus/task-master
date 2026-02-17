@@ -94,7 +94,8 @@
 			onTaskChange,
 			toggleTaskOpen: toggleTaskIndex,
 			toggleSearch,
-			onAction
+			onAction,
+			removeTask
 		};
 
 		bindManager(e, selectedTask, actions);
@@ -132,6 +133,50 @@
 		saveObjOnLocalStorage('tasks', tasks);
 
 		action = null;
+		toggleIsTyping(false);
+	};
+
+	const removeTask = (tasksIndexes: SelectedTask) => {
+		const { taskIndex, subTaskIndex } = tasksIndexes;
+
+		const task = filteredTasks[taskIndex];
+		if (!task) {
+			console.log(`Task with index ${taskIndex} not found`);
+			return;
+		}
+		const index = tasks.findIndex((t) => t.id === task.id);
+		if (index === -1) {
+			console.log(`Task with id ${task.id} not found in tasks array`);
+			return;
+		}
+
+		if (subTaskIndex === undefined) {
+			if (task.status !== 'canceled') {
+				console.log("Can't remove tasks that are not canceled");
+				return;
+			}
+
+			tasks.splice(index, 1);
+		} else {
+			const subTask = task.subTasks[subTaskIndex];
+			if (!subTask) {
+				console.log(`Subtask with index ${subTaskIndex} not found in task ${task.id}`);
+				return;
+			}
+
+			if (task.status !== 'canceled' && subTask.status !== 'canceled') {
+				console.log(
+					"Can't remove subtasks that are not canceled or whose parent task is not canceled"
+				);
+				return;
+			}
+
+			const subIndex = tasks[index].subTasks.findIndex((t) => t.id === subTask.id);
+			tasks[index].subTasks.splice(subIndex, 1);
+		}
+
+		saveObjOnLocalStorage('tasks', tasks);
+		selectedTask = verifyNewSelection(filteredTasks, selectedTask);
 	};
 
 	const addSubTask = (taskId: number, subTask: Pick<Task, 'name' | 'urgency'>) => {
@@ -179,6 +224,7 @@
 
 		saveObjOnLocalStorage('tasks', tasks);
 		action = null;
+		toggleIsTyping(false);
 		!openedTasks.includes(taskId) && openedTasks.push(taskId);
 	};
 
