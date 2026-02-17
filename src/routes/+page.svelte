@@ -141,18 +141,18 @@
 
 		const task = filteredTasks[taskIndex];
 		if (!task) {
-			console.log(`Task with index ${taskIndex} not found`);
+			console.error(`Task with index ${taskIndex} not found`);
 			return;
 		}
 		const index = tasks.findIndex((t) => t.id === task.id);
 		if (index === -1) {
-			console.log(`Task with id ${task.id} not found in tasks array`);
+			console.error(`Task with id ${task.id} not found in tasks array`);
 			return;
 		}
 
 		if (subTaskIndex === undefined) {
 			if (task.status !== 'canceled') {
-				console.log("Can't remove tasks that are not canceled");
+				console.error("Can't remove tasks that are not canceled");
 				return;
 			}
 
@@ -160,12 +160,12 @@
 		} else {
 			const subTask = task.subTasks[subTaskIndex];
 			if (!subTask) {
-				console.log(`Subtask with index ${subTaskIndex} not found in task ${task.id}`);
+				console.error(`Subtask with index ${subTaskIndex} not found in task ${task.id}`);
 				return;
 			}
 
 			if (task.status !== 'canceled' && subTask.status !== 'canceled') {
-				console.log(
+				console.error(
 					"Can't remove subtasks that are not canceled or whose parent task is not canceled"
 				);
 				return;
