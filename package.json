@@ -1,5 +1,5 @@
 {
-	"name": "task-master",
+	"name": "task-manager",
 	"version": "0.0.1",
 	"devDependencies": {
 		"@eslint/compat": "^2.0.1",

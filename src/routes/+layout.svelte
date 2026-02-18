@@ -7,7 +7,7 @@
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
-	<title>Task Master</title>
+	<title>Task Manager</title>
 </svelte:head>
 
 <div class="min-h-screen w-screen overflow-x-clip bg-neutral-900 text-neutral-200">
