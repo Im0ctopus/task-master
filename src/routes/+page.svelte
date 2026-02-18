@@ -371,6 +371,27 @@
 		}
 	};
 
+	const goToLine = (trimmedValue: string) => {
+		const lines = trimmedValue.substring(2).split('.');
+		const taskIndex = Number(lines[0]) - 1;
+		const subTaskIndex = Number(lines[1]) - 1;
+
+		const task = filteredTasks[taskIndex];
+		if (!task) return console.error('Invalid task index');
+
+		if (isNaN(subTaskIndex)) selectedTask = { taskIndex };
+		else {
+			const subTask = task.subTasks[subTaskIndex];
+			if (!subTask) return console.error('Invalid subtask index');
+
+			selectedTask = { taskIndex, subTaskIndex };
+			!openedTasks.includes(task.id) && openedTasks.push(task.id);
+		}
+
+		toggleIsTyping(false);
+		value = '';
+	};
+
 	$effect(() => {
 		searchValue;
 		selectedTab;
@@ -383,7 +404,8 @@
 		addTask,
 		editTask,
 		toggleIsTyping,
-		editSubTask
+		editSubTask,
+		goToLine
 	});
 </script>
 

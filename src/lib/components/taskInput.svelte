@@ -23,6 +23,7 @@
 			subTaskId: number,
 			subTask: Pick<Task, 'name' | 'urgency'>
 		) => void;
+		goToLine: (trimmedValue: string) => void;
 	};
 
 	type Props = {
@@ -45,7 +46,7 @@
 		toggleSearch
 	}: Props = $props();
 
-	let { addSubTask, addTask, editTask, toggleIsTyping, editSubTask } = $derived(actions);
+	let { addSubTask, addTask, editTask, toggleIsTyping, editSubTask, goToLine } = $derived(actions);
 
 	const onFocus = () => toggleIsTyping(true);
 	const onBlur = () => toggleIsTyping(false);
@@ -61,8 +62,8 @@
 				onUrgencyEdit(action, urgency, { editTask, editSubTask });
 		} else if (trimmedValue.startsWith('@') && !trimmedValue.includes(' ')) {
 			const cleanedUpVal = trimmedValue.substring(1);
-			const possibleUrgency = urgencies.find(
-				(u) => u.value.toLowerCase() === cleanedUpVal.toLowerCase()
+			const possibleUrgency = urgencies.find((u) =>
+				u.value.toLowerCase().startsWith(cleanedUpVal.toLowerCase())
 			);
 			if (!possibleUrgency) {
 				console.error('No matching urgency found');
@@ -74,6 +75,11 @@
 				onUrgencyEdit(action, urgency, { editTask, editSubTask });
 		} else if (trimmedValue === '/n' || trimmedValue === '/none') action = null;
 		else if (trimmedValue.startsWith('/') && !trimmedValue.includes(' ')) {
+			if (trimmedValue.startsWith('/l')) {
+				goToLine(trimmedValue);
+				return;
+			}
+
 			const newAction = enterAction(trimmedValue, filteredTasks);
 			if (!newAction) return;
 
