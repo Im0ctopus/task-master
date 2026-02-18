@@ -95,7 +95,8 @@
 			toggleTaskOpen: toggleTaskIndex,
 			toggleSearch,
 			onAction,
-			removeTask
+			removeTask,
+			tradeTask
 		};
 
 		bindManager(e, selectedTask, actions);
@@ -236,7 +237,7 @@
 		}
 		const taskInd = tasks.findIndex((t) => t.id === task.id);
 
-		if (subTaskIndex === undefined) {
+		if (subTaskIndex === undefined || !openedTasks.includes(task.id)) {
 			tasks[taskInd] = {
 				...tasks[taskInd],
 				status: tasks[taskInd].status === status ? 'none' : status
@@ -337,6 +338,37 @@
 
 		isSearching = value;
 		isTyping = value;
+	};
+
+	const tradeTask = (pos: -1 | 1) => {
+		const { taskIndex, subTaskIndex } = selectedTask;
+		const isSubTask = subTaskIndex !== undefined;
+
+		const sourceFilteredTask = filteredTasks[taskIndex];
+		const targetTask = isSubTask
+			? sourceFilteredTask.subTasks[subTaskIndex + pos]
+			: filteredTasks[taskIndex + pos];
+
+		if (!targetTask) return;
+
+		const sourceIndex = tasks.findIndex((t) => t.id === sourceFilteredTask.id);
+
+		if (!isSubTask) {
+			const targetIndex = tasks.findIndex((t) => t.id === targetTask.id);
+			[tasks[sourceIndex], tasks[targetIndex]] = [tasks[targetIndex], tasks[sourceIndex]];
+			onTaskChange(pos, true);
+		} else {
+			const subTasks = tasks[sourceIndex].subTasks;
+			const srcSubIndex = subTasks.findIndex(
+				(t) => t.id === sourceFilteredTask.subTasks[subTaskIndex].id
+			);
+			const tgtSubIndex = subTasks.findIndex((t) => t.id === targetTask.id);
+			[subTasks[srcSubIndex], subTasks[tgtSubIndex]] = [
+				subTasks[tgtSubIndex],
+				subTasks[srcSubIndex]
+			];
+			onTaskChange(pos);
+		}
 	};
 
 	$effect(() => {

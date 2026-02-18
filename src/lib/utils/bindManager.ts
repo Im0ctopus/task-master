@@ -11,10 +11,11 @@ export type BindActions = {
 	toggleSearch: (value: boolean) => void;
 	onAction: (newAction: string) => void;
 	removeTask: (selectedTask: SelectedTask) => void;
+	tradeTask: (pos: 1 | -1) => void;
 };
 
 export const bindManager = (e: KeyboardEvent, selectedTask: SelectedTask, actions: BindActions) => {
-	const { key, ctrlKey } = e;
+	const { key, ctrlKey, shiftKey } = e;
 	const {
 		toggleIsTyping,
 		onTabChange,
@@ -23,7 +24,8 @@ export const bindManager = (e: KeyboardEvent, selectedTask: SelectedTask, action
 		toggleTaskOpen,
 		toggleSearch,
 		onAction,
-		removeTask
+		removeTask,
+		tradeTask
 	} = actions;
 
 	// console.log(key);
@@ -37,12 +39,14 @@ export const bindManager = (e: KeyboardEvent, selectedTask: SelectedTask, action
 			}
 			case 'ArrowUp': {
 				e.preventDefault();
-				onTaskChange(-1, true);
+				if (shiftKey) tradeTask(-1);
+				else onTaskChange(-1, true);
 				break;
 			}
 			case 'ArrowDown': {
 				e.preventDefault();
-				onTaskChange(1, true);
+				if (shiftKey) tradeTask(1);
+				else onTaskChange(1, true);
 				break;
 			}
 			case 'f': {
