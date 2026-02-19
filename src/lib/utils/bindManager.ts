@@ -74,7 +74,7 @@ export const bindManager = (e: KeyboardEvent, selectedTask: SelectedTask, action
 			}
 			case 'e': {
 				onAction(
-					`/e${selectedTask.taskIndex + 1}${selectedTask.subTaskIndex ? `.${selectedTask.subTaskIndex + 1}` : ''}`
+					`/e${selectedTask.taskIndex + 1}${selectedTask.subTaskIndex !== undefined ? `.${selectedTask.subTaskIndex + 1}` : ''}`
 				);
 				break;
 			}
