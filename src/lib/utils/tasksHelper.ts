@@ -5,17 +5,29 @@ import type { Task } from '../../routes/+page.svelte';
 export const filterTasks = (tasks: Task[], tab: Status, searchValue: string): Task[] => {
 	const filteredSubtasksTasks = tasks.map((t) => ({
 		...t,
-		subTasks: t.subTasks.filter(
-			(st) =>
-				(t.status === 'canceled' || t.status === 'done' || st.status === tab) &&
-				st.name.toLowerCase().includes(searchValue.toLowerCase())
-		)
+		subTasks: t.subTasks.filter((st) => {
+			let res = false;
+
+			switch (true) {
+				case (st.status === 'canceled' || st.status === 'done') && st.status === tab:
+				case (st.status === 'none' || st.status === 'started') &&
+					t.status === tab &&
+					t.status !== 'done' &&
+					t.status !== 'canceled':
+				case (t.status === 'canceled' || t.status === 'done') && t.status === tab: {
+					res = true;
+					break;
+				}
+			}
+
+			return res && st.name.toLowerCase().includes(searchValue.toLowerCase());
+		})
 	}));
 
 	return filteredSubtasksTasks.filter(
 		(t) =>
 			(t.status === tab && t.name.toLowerCase().includes(searchValue.toLowerCase())) ||
-			(t.status !== 'canceled' && t.status !== 'done' && t.subTasks.some((s) => s.status === tab))
+			t.subTasks.some((s) => s.status === tab)
 	);
 };
 
