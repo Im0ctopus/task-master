@@ -196,7 +196,7 @@
 		saveObjOnLocalStorage('tasks', tasks);
 		!openedTasks.includes(taskId) && openedTasks.push(taskId);
 
-		onTabChange('none');
+		onTabChange(tasks[index].status);
 		setTimeout(() => {
 			const index = filteredTasks.findIndex((t) => t.id === taskId);
 			selectedTask = { taskIndex: index, subTaskIndex: filteredTasks[index].subTasks.length - 1 };

@@ -56,7 +56,7 @@
 		if (trimmedValue === '') return;
 
 		if (trimmedValue === ':q') toggleIsTyping(false);
-		else if (trimmedValue === '@none' || trimmedValue === '@n') {
+		else if (trimmedValue === '@none' || trimmedValue === '@') {
 			urgency = null;
 			if (action && action.type === 'edit')
 				onUrgencyEdit(action, urgency, { editTask, editSubTask });
