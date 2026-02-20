@@ -7,7 +7,7 @@ export const filterTasks = (tasks: Task[], tab: Status, searchValue: string): Ta
 		...t,
 		subTasks: t.subTasks.filter(
 			(st) =>
-				(t.status === 'canceled' || st.status === tab) &&
+				(t.status === 'canceled' || t.status === 'done' || st.status === tab) &&
 				st.name.toLowerCase().includes(searchValue.toLowerCase())
 		)
 	}));
@@ -15,7 +15,7 @@ export const filterTasks = (tasks: Task[], tab: Status, searchValue: string): Ta
 	return filteredSubtasksTasks.filter(
 		(t) =>
 			(t.status === tab && t.name.toLowerCase().includes(searchValue.toLowerCase())) ||
-			(t.status !== 'canceled' && t.subTasks.some((s) => s.status === tab))
+			(t.status !== 'canceled' && t.status !== 'done' && t.subTasks.some((s) => s.status === tab))
 	);
 };
 
