@@ -65,7 +65,7 @@
 		<div class="flex items-center justify-center gap-1">
 			{#if statusDate}
 				<p class="rounded bg-cyan-800/50 px-2 py-0.5 text-sm text-cyan-500 capitalize">
-					{new Date().toDateString() === statusDate
+					{new Date().toDateString() === new Date(statusDate).toDateString()
 						? 'Today'
 						: new Date(statusDate).toLocaleDateString(undefined, {
 								month: 'short',

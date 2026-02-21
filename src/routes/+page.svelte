@@ -4,7 +4,7 @@
 		name: string;
 		urgency: string | null;
 		status: Status;
-		statusDate?: string;
+		statusDate?: number;
 		subTasks: SubTask[];
 	};
 
@@ -116,12 +116,12 @@
 
 	const addTask = (task: Pick<Task, 'name' | 'urgency'>) => {
 		const id = ++currentId;
-		const newTasks: Task[] = [...tasks, { ...task, id, status: 'none', subTasks: [] }];
+		const newTasks: Task[] = [{ ...task, id, status: 'none', subTasks: [] }, ...tasks];
 		tasks = newTasks;
 		saveObjOnLocalStorage('tasks', newTasks);
 
 		onTabChange('none');
-		setTimeout(() => (selectedTask = { taskIndex: filteredTasks.length - 1 }), 10);
+		setTimeout(() => (selectedTask = { taskIndex: 0 }), 10);
 	};
 
 	const editTask = (id: number, newTask: Pick<Task, 'name' | 'urgency'>) => {
@@ -188,7 +188,8 @@
 		const id = tasks[index].subTasks.length
 			? Math.max(...tasks[index].subTasks.map((t) => t.id)) + 1
 			: 1;
-		tasks[index].subTasks.push({
+
+		tasks[index].subTasks.unshift({
 			...subTask,
 			id,
 			status: 'none'
@@ -200,7 +201,7 @@
 		onTabChange(tasks[index].status);
 		setTimeout(() => {
 			const index = filteredTasks.findIndex((t) => t.id === taskId);
-			selectedTask = { taskIndex: index, subTaskIndex: filteredTasks[index].subTasks.length - 1 };
+			selectedTask = { taskIndex: index, subTaskIndex: 0 };
 		}, 10);
 	};
 
@@ -237,7 +238,7 @@
 			return;
 		}
 		const taskInd = tasks.findIndex((t) => t.id === task.id);
-		const statusDate = status === 'done' ? new Date().toDateString() : undefined;
+		const statusDate = status === 'done' ? new Date().getTime() : undefined;
 
 		if (subTaskIndex === undefined || !openedTasks.includes(task.id)) {
 			tasks[taskInd] = {
@@ -345,6 +346,8 @@
 	};
 
 	const tradeTask = (pos: -1 | 1) => {
+		if (selectedTab === 'done') return;
+
 		const { taskIndex, subTaskIndex } = selectedTask;
 		const isSubTask = subTaskIndex !== undefined;
 
@@ -373,6 +376,8 @@
 			];
 			onTaskChange(pos);
 		}
+
+		saveObjOnLocalStorage('tasks', tasks);
 	};
 
 	const goToLine = (trimmedValue: string) => {
