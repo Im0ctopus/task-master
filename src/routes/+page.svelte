@@ -4,6 +4,7 @@
 		name: string;
 		urgency: string | null;
 		status: Status;
+		statusDate?: string;
 		subTasks: SubTask[];
 	};
 
@@ -236,11 +237,13 @@
 			return;
 		}
 		const taskInd = tasks.findIndex((t) => t.id === task.id);
+		const statusDate = status === 'done' ? new Date().toDateString() : undefined;
 
 		if (subTaskIndex === undefined || !openedTasks.includes(task.id)) {
 			tasks[taskInd] = {
 				...tasks[taskInd],
-				status: tasks[taskInd].status === status ? 'none' : status
+				status,
+				statusDate
 			};
 		} else {
 			const subTask = task.subTasks[subTaskIndex];
@@ -252,7 +255,8 @@
 			const subTaskInd = tasks[taskInd].subTasks.findIndex((t) => t.id === subTask.id);
 			tasks[taskInd].subTasks[subTaskInd] = {
 				...tasks[taskInd].subTasks[subTaskInd],
-				status: tasks[taskInd].subTasks[subTaskInd].status === status ? 'none' : status
+				status: status,
+				statusDate
 			};
 		}
 
