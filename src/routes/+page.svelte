@@ -422,7 +422,7 @@
 	<div class="flex h-screen w-full flex-col items-center justify-start overflow-clip font-main">
 		<TabSelector {selectedTab} {onTabChange} />
 		<div class="relative min-h-0 w-full grow">
-			<TaskList {filteredTasks} {openedTasks} {toggleTaskOpen} />
+			<TaskList {filteredTasks} {openedTasks} {toggleTaskOpen} {selectedTab} />
 		</div>
 		<div class="w-full max-w-4xl shrink-0 px-3 lg:px-0">
 			<TaskInput
