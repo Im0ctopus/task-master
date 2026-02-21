@@ -9,7 +9,8 @@ export const filterTasks = (tasks: Task[], tab: Status, searchValue: string): Ta
 			let res = false;
 
 			switch (true) {
-				case (st.status === 'canceled' || st.status === 'done') && st.status === tab:
+				case (st.status === 'canceled' || (st.status === 'done' && t.status !== 'canceled')) &&
+					st.status === tab:
 				case (st.status === 'none' || st.status === 'started') &&
 					t.status === tab &&
 					t.status !== 'done' &&
