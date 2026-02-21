@@ -21,7 +21,7 @@
 	let getShowIds: () => boolean = getContext('getShowIds');
 
 	let selectedTask = $derived(getSelectedTask());
-	let { id, name, status, subTasks, urgency } = $derived(task);
+	let { id, name, status, subTasks, urgency, statusDate } = $derived(task);
 	let taskVariation = $derived(taskVariations[status]);
 	let urgencyVariation = $derived(urgencies.find((u) => u.value === urgency));
 
@@ -63,6 +63,16 @@
 			{/if}
 		</div>
 		<div class="flex items-center justify-center gap-1">
+			{#if statusDate}
+				<p class="rounded bg-cyan-800/50 px-2 py-0.5 text-sm text-cyan-500 capitalize">
+					{new Date().toDateString() === new Date(statusDate).toDateString()
+						? 'Today'
+						: new Date(statusDate).toLocaleDateString(undefined, {
+								month: 'short',
+								day: 'numeric'
+							})}
+				</p>
+			{/if}
 			<button
 				onfocus={stopFocus}
 				onclick={() => toggleTaskOpen(id)}

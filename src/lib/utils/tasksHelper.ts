@@ -24,11 +24,17 @@ export const filterTasks = (tasks: Task[], tab: Status, searchValue: string): Ta
 		})
 	}));
 
-	return filteredSubtasksTasks.filter(
+	const filteredTasks = filteredSubtasksTasks.filter(
 		(t) =>
 			(t.status === tab && t.name.toLowerCase().includes(searchValue.toLowerCase())) ||
 			t.subTasks.some((s) => s.status === tab)
 	);
+
+	return tab === 'done'
+		? filteredTasks.sort(
+				(a, b) => Number(b.statusDate || 177777777777777) - Number(a.statusDate || 177777777777777)
+			)
+		: filteredTasks;
 };
 
 export const verifyNewSelection = (tasks: Task[], selectedTask: SelectedTask): SelectedTask => {
