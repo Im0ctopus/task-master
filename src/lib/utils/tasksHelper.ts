@@ -15,13 +15,16 @@ export const filterTasks = (tasks: Task[], tab: Status, searchValue: string): Ta
 					st.status === tab &&
 					t.status !== 'canceled' &&
 					t.status !== 'done':
+				case t.status === 'blocked' &&
+					t.status === tab &&
+					st.status !== 'canceled' &&
+					st.status !== 'done':
 				case (st.status === 'none' || st.status === 'started') &&
 					t.status === tab &&
 					t.status !== 'done' &&
 					t.status !== 'canceled' &&
 					t.status !== 'blocked':
-				case (t.status === 'canceled' || t.status === 'done' || t.status === 'blocked') &&
-					t.status === tab: {
+				case (t.status === 'canceled' || t.status === 'done') && t.status === tab: {
 					res = true;
 					break;
 				}
