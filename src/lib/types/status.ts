@@ -1,1 +1,1 @@
-export type Status = 'none' | 'started' | 'done' | 'canceled';
+export type Status = 'none' | 'started' | 'blocked' | 'done' | 'canceled';
