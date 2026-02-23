@@ -11,7 +11,10 @@ export const filterTasks = (tasks: Task[], tab: Status, searchValue: string): Ta
 			switch (true) {
 				case st.status === 'done' && t.status !== 'canceled' && st.status === tab:
 				case st.status === 'canceled' && t.status !== 'done' && st.status === tab:
-				case st.status === 'blocked' && st.status === tab:
+				case st.status === 'blocked' &&
+					st.status === tab &&
+					t.status !== 'canceled' &&
+					t.status !== 'done':
 				case (st.status === 'none' || st.status === 'started') &&
 					t.status === tab &&
 					t.status !== 'done' &&
