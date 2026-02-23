@@ -90,6 +90,10 @@ export const bindManager = (e: KeyboardEvent, selectedTask: SelectedTask, action
 				onStatusChange('started', selectedTask.taskIndex, selectedTask.subTaskIndex);
 				break;
 			}
+			case 'b': {
+				onStatusChange('blocked', selectedTask.taskIndex, selectedTask.subTaskIndex);
+				break;
+			}
 			case 'd': {
 				onStatusChange('done', selectedTask.taskIndex, selectedTask.subTaskIndex);
 				break;

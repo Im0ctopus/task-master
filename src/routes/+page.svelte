@@ -61,7 +61,7 @@
 
 	onMount(() => {
 		const storedTasks = getObjFromLocalStorage('tasks');
-		const storedTab = getItemFromLocalStorage('tab');
+		const storedTab = getItemFromLocalStorage('tab') as Status;
 
 		if (storedTasks) {
 			tasks = storedTasks;
@@ -70,6 +70,7 @@
 
 		if (
 			storedTab === 'none' ||
+			storedTab === 'blocked' ||
 			storedTab === 'started' ||
 			storedTab === 'done' ||
 			storedTab === 'canceled'

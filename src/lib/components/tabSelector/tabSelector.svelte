@@ -5,6 +5,7 @@
 	}[] = [
 		{ label: 'Working On', value: 'none' },
 		{ label: 'Started', value: 'started' },
+		{ label: 'Blocked', value: 'blocked' },
 		{ label: 'Done', value: 'done' },
 		{ label: 'Canceled', value: 'canceled' }
 	];
