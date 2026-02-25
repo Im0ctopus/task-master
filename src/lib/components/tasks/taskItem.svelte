@@ -53,7 +53,7 @@
 					{taskVariation.icon}
 				</p>
 			</div>
-			<p class="truncate">
+			<p class="truncate" title={name}>
 				{name}
 			</p>
 			{#if urgency}
