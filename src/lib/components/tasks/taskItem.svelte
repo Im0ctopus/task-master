@@ -13,23 +13,32 @@
 		index: number;
 		isOpen: boolean;
 		toggleTaskOpen: (id: number) => void;
+		scrollToTask: (top: number, bottom: number) => void;
 	};
 
-	let { task, isOpen, toggleTaskOpen, index }: Props = $props();
+	let { task, isOpen, toggleTaskOpen, index, scrollToTask }: Props = $props();
 
 	let { getSelectedTask }: TaskContext = getContext('taskContext');
 	let getShowIds: () => boolean = getContext('getShowIds');
+
+	// svelte-ignore non_reactive_update
+	let indexP: HTMLParagraphElement;
+	let divRef: HTMLDivElement;
 
 	let selectedTask = $derived(getSelectedTask());
 	let { id, name, status, subTasks, urgency, statusDate } = $derived(task);
 	let taskVariation = $derived(taskVariations[status]);
 	let urgencyVariation = $derived(urgencies.find((u) => u.value === urgency));
 
-	// svelte-ignore non_reactive_update
-	let indexP: HTMLParagraphElement;
+	$effect(() => {
+		if (selectedTask.taskIndex !== index) return;
+
+		scrollToTask(divRef.offsetTop, divRef.offsetTop + divRef.offsetHeight);
+	});
 </script>
 
 <div
+	bind:this={divRef}
 	class="w-full min-w-0 cursor-default rounded px-3 {taskVariation.bgColor} {selectedTask.taskIndex ===
 		index &&
 		(selectedTask.subTaskIndex === undefined
