@@ -98,7 +98,8 @@
 			toggleSearch,
 			onAction,
 			removeTask,
-			tradeTask
+			tradeTask,
+			upgradeSubTask
 		};
 
 		bindManager(e, selectedTask, actions);
@@ -107,7 +108,9 @@
 	const toggleIsTyping = (val: boolean) => {
 		if (!val) setTimeout(() => (isTyping = false), 10);
 		else isTyping = val;
-		val ? inputRef.focus() : inputRef.blur();
+
+		if (val) inputRef.focus();
+		else inputRef.blur();
 	};
 
 	const onTabChange = (tab: Status) => {
@@ -197,7 +200,7 @@
 		});
 
 		saveObjOnLocalStorage('tasks', tasks);
-		!openedTasks.includes(taskId) && openedTasks.push(taskId);
+		if (openedTasks.includes(taskId)) openedTasks.push(taskId);
 
 		onTabChange(tasks[index].status);
 		setTimeout(() => {
@@ -229,7 +232,7 @@
 		saveObjOnLocalStorage('tasks', tasks);
 		action = null;
 		toggleIsTyping(false);
-		!openedTasks.includes(taskId) && openedTasks.push(taskId);
+		if (openedTasks.includes(taskId)) openedTasks.push(taskId);
 	};
 
 	const onStatusChange = (status: Status, taskIndex: number, subTaskIndex?: number) => {
@@ -307,9 +310,9 @@
 	const toggleTaskOpen = (id: number) => {
 		const task = tasks.find((t) => t.id === id);
 		const filteredTask = filteredTasks.find((t) => t.id === id);
-		if (!task || !filteredTask?.subTasks.length) return;
+		if (!task) return;
 
-		if (!openedTasks.includes(id)) openedTasks.push(id);
+		if (!openedTasks.includes(id) && filteredTask?.subTasks.length) openedTasks.push(id);
 		else {
 			const index = openedTasks.findIndex((t) => t === id);
 			if (index === -1) return;
@@ -395,15 +398,39 @@
 			if (!subTask) return console.error('Invalid subtask index');
 
 			selectedTask = { taskIndex, subTaskIndex };
-			!openedTasks.includes(task.id) && openedTasks.push(task.id);
+			if (openedTasks.includes(task.id)) openedTasks.push(task.id);
 		}
 
 		toggleIsTyping(false);
 		value = '';
 	};
 
+	const upgradeSubTask = () => {
+		const { taskIndex, subTaskIndex } = selectedTask;
+		if (subTaskIndex === undefined) return;
+
+		const newTasks = [...tasks];
+		const filteredTask = filteredTasks[taskIndex];
+		const subTask = filteredTask.subTasks[subTaskIndex];
+		const source = newTasks.find((t) => t.id === filteredTask.id);
+		if (!source) return;
+
+		source.subTasks = source.subTasks.filter((t) => t.id !== subTask.id);
+
+		const id = ++currentId;
+		newTasks.unshift({ ...subTask, id, subTasks: [] });
+
+		tasks = newTasks;
+		saveObjOnLocalStorage('tasks', newTasks);
+		setSelectedTask({ taskIndex: 0 });
+
+		if (!source.subTasks.length) toggleTaskOpen(source.id);
+	};
+
 	$effect(() => {
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 		searchValue;
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 		selectedTab;
 
 		selectedTask = defaultSelectedTask;

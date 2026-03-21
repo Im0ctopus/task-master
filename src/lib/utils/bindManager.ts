@@ -12,6 +12,7 @@ export type BindActions = {
 	onAction: (newAction: string) => void;
 	removeTask: (selectedTask: SelectedTask) => void;
 	tradeTask: (pos: 1 | -1) => void;
+	upgradeSubTask: () => void;
 };
 
 export const bindManager = (e: KeyboardEvent, selectedTask: SelectedTask, actions: BindActions) => {
@@ -25,7 +26,8 @@ export const bindManager = (e: KeyboardEvent, selectedTask: SelectedTask, action
 		toggleSearch,
 		onAction,
 		removeTask,
-		tradeTask
+		tradeTask,
+		upgradeSubTask
 	} = actions;
 
 	// console.log(key);
@@ -104,6 +106,10 @@ export const bindManager = (e: KeyboardEvent, selectedTask: SelectedTask, action
 			}
 			case 'r': {
 				removeTask(selectedTask);
+				break;
+			}
+			case 'u': {
+				upgradeSubTask();
 				break;
 			}
 			case 'Escape': {
