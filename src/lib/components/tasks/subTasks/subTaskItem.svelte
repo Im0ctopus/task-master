@@ -59,7 +59,9 @@
 			{/if}
 		</div>
 		{#if statusDate}
-			<p class="rounded bg-cyan-800/50 px-2 py-0.5 text-sm text-cyan-500 capitalize">
+			<p
+				class="shrink-0 rounded bg-cyan-800/50 px-2 py-0.5 text-sm text-nowrap text-cyan-500 capitalize"
+			>
 				{new Date().toDateString() === new Date(statusDate).toDateString()
 					? 'Today'
 					: new Date(statusDate).toLocaleDateString(undefined, {
