@@ -1,42 +1,26 @@
-# sv
+# Personal Task Management App
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+A simple personal task management app built for fast, keyboard-only task handling.
 
-## Creating a project
+This project exists so I can manage tasks with speed and precision using the keyboard.  
+The app is designed to work best with keyboard controls, and mouse interaction is intentionally limited.
 
-If you're seeing this, you've probably already done this step. Congrats!
+## Live App
 
-```sh
-# create a new project
-npx sv create my-app
-```
+You can try the app [here](https://fushiguro-task-manager.vercel.app)
 
-To recreate this project with the same configuration:
+## Data Storage
 
-```sh
-# recreate this project
-bun x sv create --template minimal --types ts --add prettier eslint sveltekit-adapter="adapter:auto" tailwindcss="plugins:none" --install bun .
-```
+This app stores all data on local storage.  
+Nothing is sent to a server or stored in the cloud.
 
-## Developing
+## Keyboard Bindings
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+You can find all keyboard shortcuts and bindings in:
 
-```sh
-npm run dev
+`keybinds.md`
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+## License
 
-## Building
-
-To create a production version of your app:
-
-```sh
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+This project is free to use, including for personal and work purposes.  
+You may not sell, redistribute for profit, or claim it as your own.
