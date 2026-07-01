@@ -9,36 +9,14 @@
 	};
 
 	let { subTasks, isOpen, taskIndex }: Props = $props();
-
-	let animateOpen = $state();
-	let render = $state(false);
-	let subTaskListRef: HTMLElement | null = $state(null);
-
-	$effect(() => {
-		if (!isOpen) {
-			animateOpen = false;
-			return;
-		}
-
-		render = isOpen;
-		const timeout = setTimeout(() => (animateOpen = true), 10);
-
-		return () => {
-			clearTimeout(timeout);
-		};
-	});
 </script>
 
-{#if render}
-	{#key subTasks.length}
-		<div
-			class="overflow-hidden transition-[max-height] duration-300 ease-out"
-			style="max-height: {animateOpen ? subTaskListRef?.scrollHeight : 0}px;"
-			ontransitionend={() => {
-				if (!isOpen) render = false;
-			}}
-		>
-			<div bind:this={subTaskListRef} class="px-1 pb-2.5">
+{#key subTasks.length}
+	<div
+		class={`grid overflow-hidden transition-[grid-template-rows] duration-300 ease-out ${isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}
+	>
+		<div class="overflow-hidden">
+			<div class="px-1 pb-2.5">
 				<p class="pb-1 text-xs text-neutral-500">Subtasks</p>
 				<div class="flex flex-col items-center justify-center gap-2">
 					{#each subTasks as task, index (task.id)}
@@ -47,5 +25,5 @@
 				</div>
 			</div>
 		</div>
-	{/key}
-{/if}
+	</div>
+{/key}
