@@ -200,7 +200,7 @@
 		});
 
 		saveObjOnLocalStorage('tasks', tasks);
-		if (openedTasks.includes(taskId)) openedTasks.push(taskId);
+		if (!openedTasks.includes(taskId)) openedTasks.push(taskId);
 
 		onTabChange(tasks[index].status);
 		setTimeout(() => {
