@@ -1,17 +1,17 @@
 <script lang="ts">
 	import type { Status } from '$lib/types/status';
-	import type { Task } from '../../../routes/+page.svelte';
+	import type { Task } from '$lib/types/tasks';
 	import NoTasks from './noTasks.svelte';
 	import TaskItem from './taskItem.svelte';
 
 	type Props = {
 		filteredTasks: Task[];
 		openedTasks: number[];
-		toggleTaskOpen: (id: number) => void;
 		selectedTab: Status;
+		isFocused: boolean;
 	};
 
-	let { filteredTasks, openedTasks, toggleTaskOpen, selectedTab }: Props = $props();
+	let { filteredTasks, openedTasks, selectedTab, isFocused }: Props = $props();
 
 	let listRef: HTMLDivElement | null = $state(null);
 
@@ -36,18 +36,20 @@
 	};
 </script>
 
-<div bind:this={listRef} class="relative h-full max-h-full w-full overflow-y-auto">
+<div bind:this={listRef} class="max-h-full min-w-0 flex-1 overflow-y-auto">
 	{#if !filteredTasks.length}
 		<NoTasks {selectedTab} />
 	{:else}
-		<div class="mx-auto flex w-full max-w-4xl flex-col items-center justify-center gap-3 px-3 py-5">
+		<div
+			class="full flex flex-1 scrollbar-thin flex-col items-center justify-center gap-3 px-4 py-5"
+		>
 			{#each filteredTasks as task, index (task.id)}
 				<TaskItem
 					{task}
 					isOpen={openedTasks.includes(task.id)}
 					{index}
-					{toggleTaskOpen}
 					{scrollToTask}
+					{isFocused}
 				/>
 			{/each}
 		</div>

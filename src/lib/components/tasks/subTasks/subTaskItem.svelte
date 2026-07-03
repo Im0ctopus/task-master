@@ -33,8 +33,8 @@
 		'outline outline-neutral-500'}"
 >
 	<div class="flex w-full items-center justify-between gap-2">
-		<div class="flex min-w-0 items-center justify-center gap-2">
-			<div class="flex items-center justify-center">
+		<div class="flex min-w-0 items-start justify-center gap-2">
+			<div class="mt-1 flex items-center justify-center">
 				<div
 					style="width: {getShowIds() ? indexP?.offsetWidth + 5 : '0'}px;"
 					class="overflow-hidden transition-[width] duration-150 ease-out"
@@ -49,7 +49,7 @@
 					{taskVariation.icon}
 				</p>
 			</div>
-			<p class="truncate" title={name}>
+			<p>
 				{name}
 			</p>
 			{#if urgency}

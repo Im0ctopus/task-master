@@ -1,16 +1,3 @@
-<script lang="ts" module>
-	export type Task = {
-		id: number;
-		name: string;
-		urgency: string | null;
-		status: Status;
-		statusDate?: number;
-		subTasks: SubTask[];
-	};
-
-	export type SubTask = Omit<Task, 'subTasks'>;
-</script>
-
 <script lang="ts">
 	import TaskInput, { type InputActions } from '$lib/components/taskInput.svelte';
 	import type { Status } from '$lib/types/status';
@@ -28,6 +15,7 @@
 	import { defaultSelectedTask, type SelectedTask, type TaskContext } from '$lib/types/taskContext';
 	import { filterTasks, verifyNewSelection } from '$lib/utils/tasksHelper';
 	import Search from '$lib/components/search.svelte';
+	import type { Task } from '$lib/types/tasks';
 
 	let value: string = $state('');
 	let urgency: null | string = $state(null);
@@ -44,6 +32,9 @@
 	let currentId: number = 0;
 
 	let filteredTasks: Task[] = $derived(filterTasks(tasks, selectedTab, searchValue.trim()));
+	let secondFilteredTasks: Task[] = $derived(
+		filterTasks(tasks, selectedTab === 'started' ? 'none' : 'started', searchValue.trim())
+	);
 
 	// svelte-ignore non_reactive_update
 	let inputRef: HTMLTextAreaElement;
@@ -102,7 +93,7 @@
 			upgradeSubTask
 		};
 
-		bindManager(e, selectedTask, actions);
+		bindManager(e, selectedTask, selectedTab, actions);
 	};
 
 	const toggleIsTyping = (val: boolean) => {
@@ -449,8 +440,21 @@
 {#if isReady}
 	<div class="flex h-screen w-full flex-col items-center justify-start overflow-clip font-main">
 		<TabSelector {selectedTab} {onTabChange} />
-		<div class="relative min-h-0 w-full grow">
-			<TaskList {filteredTasks} {openedTasks} {toggleTaskOpen} {selectedTab} />
+		<div class="relative mx-auto flex h-full min-h-0 w-full max-w-4xl overflow-hidden">
+			<TaskList
+				filteredTasks={selectedTab === 'started' ? secondFilteredTasks : filteredTasks}
+				{openedTasks}
+				selectedTab={selectedTab === 'started' ? 'none' : selectedTab}
+				isFocused={selectedTab !== 'started'}
+			/>
+			{#if (selectedTab === 'none' && secondFilteredTasks.length > 0) || selectedTab === 'started'}
+				<TaskList
+					filteredTasks={selectedTab === 'none' ? secondFilteredTasks : filteredTasks}
+					{openedTasks}
+					{selectedTab}
+					isFocused={selectedTab === 'started'}
+				/>
+			{/if}
 		</div>
 		<div class="w-full max-w-4xl shrink-0 px-3 lg:px-0">
 			<TaskInput

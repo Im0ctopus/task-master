@@ -15,7 +15,12 @@ export type BindActions = {
 	upgradeSubTask: () => void;
 };
 
-export const bindManager = (e: KeyboardEvent, selectedTask: SelectedTask, actions: BindActions) => {
+export const bindManager = (
+	e: KeyboardEvent,
+	selectedTask: SelectedTask,
+	selectedTab: Status,
+	actions: BindActions
+) => {
 	const { key, ctrlKey, shiftKey } = e;
 	const {
 		toggleIsTyping,
@@ -67,6 +72,16 @@ export const bindManager = (e: KeyboardEvent, selectedTask: SelectedTask, action
 			case 'ArrowDown': {
 				e.preventDefault();
 				onTaskChange(1);
+				break;
+			}
+			case 'ArrowRight': {
+				e.preventDefault();
+				if (selectedTab === 'none') onTabChange('started');
+				break;
+			}
+			case 'ArrowLeft': {
+				e.preventDefault();
+				if (selectedTab === 'started') onTabChange('none');
 				break;
 			}
 			case ' ':

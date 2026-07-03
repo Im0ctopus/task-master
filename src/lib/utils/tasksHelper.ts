@@ -1,6 +1,6 @@
 import type { Status } from '$lib/types/status';
 import type { SelectedTask } from '$lib/types/taskContext';
-import type { Task } from '../../routes/+page.svelte';
+import type { Task } from '$lib/types/tasks';
 
 export const filterTasks = (tasks: Task[], tab: Status, searchValue: string): Task[] => {
 	const filteredSubtasksTasks = tasks.map((t) => ({

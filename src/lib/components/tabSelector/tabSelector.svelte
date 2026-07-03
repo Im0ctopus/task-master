@@ -4,7 +4,6 @@
 		value: Status;
 	}[] = [
 		{ label: 'Working On', value: 'none' },
-		{ label: 'Started', value: 'started' },
 		{ label: 'Blocked', value: 'blocked' },
 		{ label: 'Done', value: 'done' },
 		{ label: 'Canceled', value: 'canceled' }
@@ -30,8 +29,10 @@
 		<button
 			onfocus={stopFocus}
 			id="tab_{value}"
-			class="rounded p-1 transition-colors duration-150 ease-out {selectedTab !== value &&
-				'cursor-pointer text-neutral-500'}"
+			class="rounded p-1 transition-colors duration-150 ease-out {selectedTab == value ||
+			(selectedTab === 'started' && value === 'none')
+				? ''
+				: 'cursor-pointer text-neutral-500'}"
 			onclick={() => onTabChange(value)}
 		>
 			{label}
