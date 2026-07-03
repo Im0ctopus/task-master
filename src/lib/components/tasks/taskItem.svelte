@@ -26,7 +26,7 @@
 	let divRef: HTMLDivElement;
 
 	let selectedTask = $derived(isFocused ? getSelectedTask() : null);
-	let { id, name, status, subTasks, urgency, statusDate } = $derived(task);
+	let { name, status, subTasks, urgency, statusDate } = $derived(task);
 	let taskVariation = $derived(taskVariations[status]);
 	let urgencyVariation = $derived(urgencies.find((u) => u.value === urgency));
 
@@ -95,6 +95,6 @@
 		</div>
 	</div>
 	{#if subTasks.length}
-		<SubTasksList {subTasks} {isOpen} taskIndex={index} />
+		<SubTasksList {subTasks} {isOpen} taskIndex={index} {isFocused} />
 	{/if}
 </div>
