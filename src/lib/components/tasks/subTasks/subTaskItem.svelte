@@ -9,9 +9,10 @@
 		task: SubTask;
 		taskIndex: number;
 		index: number;
+		isFocused: boolean;
 	};
 
-	let { task, index, taskIndex }: Props = $props();
+	let { task, index, taskIndex, isFocused }: Props = $props();
 
 	let { name, status, urgency, statusDate } = $derived(task);
 	let taskVariation = $derived(taskVariations[status]);
@@ -20,15 +21,15 @@
 	let { getSelectedTask }: TaskContext = getContext('taskContext');
 	let getShowIds: () => boolean = getContext('getShowIds');
 
-	let selectedTask = $derived(getSelectedTask());
+	let selectedTask = $derived(isFocused ? getSelectedTask() : null);
 
 	// svelte-ignore non_reactive_update
 	let indexP: HTMLParagraphElement;
 </script>
 
 <div
-	class="flex w-full min-w-0 cursor-default items-center justify-between gap-2 rounded px-3 py-2.5 {taskVariation.bgColor} {selectedTask.taskIndex ===
-		taskIndex &&
+	class="flex w-full min-w-0 cursor-default items-center justify-between gap-2 rounded px-3 py-2.5 {taskVariation.bgColor} {!!selectedTask &&
+		selectedTask.taskIndex === taskIndex &&
 		selectedTask.subTaskIndex === index &&
 		'outline outline-neutral-500'}"
 >

@@ -6,9 +6,10 @@
 		subTasks: SubTask[];
 		isOpen: boolean;
 		taskIndex: number;
+		isFocused: boolean;
 	};
 
-	let { subTasks, isOpen, taskIndex }: Props = $props();
+	let { subTasks, isOpen, taskIndex, isFocused }: Props = $props();
 </script>
 
 {#key subTasks.length}
@@ -20,7 +21,7 @@
 				<p class="pb-1 text-xs text-neutral-500">Subtasks</p>
 				<div class="flex flex-col items-center justify-center gap-2">
 					{#each subTasks as task, index (task.id)}
-						<SubTaskItem {task} {index} {taskIndex} />
+						<SubTaskItem {task} {index} {taskIndex} {isFocused} />
 					{/each}
 				</div>
 			</div>
