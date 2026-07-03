@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { Task } from '$lib/types/tasks';
 	import {
 		enterAction,
 		onAction,
@@ -8,7 +9,6 @@
 	} from '$lib/utils/actionsHelper';
 	import { stopFocus } from '$lib/utils/stopFocus';
 	import { urgencies } from '$lib/utils/urgencies';
-	import type { Task } from '../../routes/+page.svelte';
 
 	import UrgencyBtn from './common/buttons/urgencyBtn.svelte';
 	import { Plus, X } from '@lucide/svelte';
