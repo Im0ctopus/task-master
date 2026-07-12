@@ -225,6 +225,7 @@
 
 		saveObjOnLocalStorage('tasks', tasks);
 		action = null;
+		urgency = null;
 		toggleIsTyping(false);
 		if (openedTasks.includes(taskId)) openedTasks.push(taskId);
 	};
