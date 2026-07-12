@@ -116,6 +116,7 @@
 		saveObjOnLocalStorage('tasks', newTasks);
 
 		onTabChange('none');
+		urgency = null;
 		setTimeout(() => (selectedTask = { taskIndex: 0 }), 10);
 	};
 
@@ -130,6 +131,7 @@
 		saveObjOnLocalStorage('tasks', tasks);
 
 		action = null;
+		urgency = null;
 		toggleIsTyping(false);
 	};
 
@@ -194,6 +196,7 @@
 		if (!openedTasks.includes(taskId)) openedTasks.push(taskId);
 
 		onTabChange(tasks[index].status);
+		urgency = null;
 		setTimeout(() => {
 			const index = filteredTasks.findIndex((t) => t.id === taskId);
 			selectedTask = { taskIndex: index, subTaskIndex: 0 };
@@ -319,7 +322,9 @@
 		toggleTaskOpen(task.id);
 	};
 
-	const onAction = (newAction: string) => {
+	const onAction = (newAction: string | null) => {
+		if (!newAction) return (action = null);
+
 		action = enterAction(newAction, filteredTasks) || null;
 		if (!action) return;
 
