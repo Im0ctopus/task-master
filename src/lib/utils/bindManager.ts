@@ -9,7 +9,7 @@ export type BindActions = {
 	onTaskChange: (goto: -1 | 1, skip?: boolean) => void;
 	toggleTaskOpen: (index: number) => void;
 	toggleSearch: (value: boolean) => void;
-	onAction: (newAction: string) => void;
+	onAction: (newAction: string | null) => void;
 	removeTask: (selectedTask: SelectedTask) => void;
 	tradeTask: (pos: 1 | -1) => void;
 	upgradeSubTask: () => void;
@@ -41,6 +41,7 @@ export const bindManager = (
 		switch (key) {
 			case ' ':
 			case 'Enter': {
+				onAction(null);
 				toggleIsTyping(true);
 				break;
 			}
